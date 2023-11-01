@@ -76,7 +76,9 @@ const arrowdown = require("../assets/icons/arrowdown.png")
 const personimg = require("../assets/icons/personimg.png")
 const notfi = require("../assets/icons/notfi.png")
 const edit = require("../assets/icons/edit.png")
-
+const alarm=require("../assets/icons/alarm.png")
+const code=require("../assets/icons/code.png")
+const team=require("../assets/icons/team.png")
 
 export default {
   kg,add,cloud,volt,pc,Backview,calender,bill,arrowup,arrowdown,personimg,notfi,
@@ -125,5 +127,8 @@ export default {
   facebookButton,
   googleButton,
   check,
-  edit
+  edit,
+  alarm,
+  code,
+  team
 };

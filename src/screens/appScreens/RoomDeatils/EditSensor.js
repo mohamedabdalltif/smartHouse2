@@ -43,6 +43,7 @@ import AnimatedLottieView from 'lottie-react-native';
 import axios from 'axios';
 
 const EditSensor = ({ navigation, route }) => {
+    const { userData } = useSelector(state => state.UserReducer);
     const { psdata, type } = route.params;
     const [name, setName] = useState(psdata.name);
     const [topic, setTopic] = useState(psdata.topic);
@@ -138,7 +139,7 @@ const EditSensor = ({ navigation, route }) => {
                     >
                         <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {userData.user_id==3&&<TouchableOpacity
                         onPress={() => {
                            deleteSensor()
                         }}
@@ -160,6 +161,7 @@ const EditSensor = ({ navigation, route }) => {
 
 
                     </TouchableOpacity>
+}
                     {/* <View /> */}
 
 
@@ -214,7 +216,7 @@ const EditSensor = ({ navigation, route }) => {
                     }}
                 />
 
-                <TextInput
+             {userData.user_id==3&&   <TextInput
                     style={{
                         width: '90%',
                         // height: 50,
@@ -232,6 +234,7 @@ const EditSensor = ({ navigation, route }) => {
                         setTopic(value)
                     }}
                 />
+            }
 
                 {/* {type=="Slider"&&
                 <View style={{

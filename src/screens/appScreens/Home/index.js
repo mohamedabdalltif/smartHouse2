@@ -54,7 +54,8 @@ import Voice, {
   SpeechResultsEvent,
   SpeechErrorEvent,
 } from '@react-native-voice/voice';
-
+import notifee from '@notifee/react-native';
+import BackgroundService from 'react-native-background-actions';
 import axios from 'axios';
 const CARD_HEIGHT = 220;
 const CARD_WIDTH = SIZES.width * 0.8;
@@ -66,7 +67,22 @@ if (
 }
 import { useDispatch, useSelector } from 'react-redux';
 import AnimatedLottieView from 'lottie-react-native';
+import RNFetchBlob from 'rn-fetch-blob';
+const options = {
+  taskName: 'i4technology',
+  taskTitle: 'i4technology',
+  taskDesc: 'Background Event',
+  stopOnTerminate: true,
+  taskIcon: {
+    name: 'ic_launcher',
+    type: 'mipmap',
+  },
 
+  parameters: {
+    delay: 5000,
+
+  },
+};
 const Home = ({ navigation }) => {
 
   const dispatch = useDispatch();
@@ -79,12 +95,13 @@ const Home = ({ navigation }) => {
   const [results, setResults] = useState([]);
   const [partialResults, setPartialResults] = useState([]);
   const [pitch, setPitch] = useState('');
-
+  const [data, setdata] = useState([])
   // });
   const [client, setClient] = useState(null)
   const [loading, setLoading] = useState(true)
   const [addLoading, setAddLoading] = useState(false)
   const [connection, setConnection] = useState(true)
+  const [imageUpdated, setImageUpdated] = useState(false)
   const [newImage, setNewImage] = useState({});
 
 
@@ -101,17 +118,21 @@ const Home = ({ navigation }) => {
   const [counter, setCounter] = useState(0);
   const [delLoading, setDelLoading] = useState(false);
   useEffect(() => {
-  if (connection) {
-    const interval = setInterval(() => {
-      setCounter(counter => counter + 1);
-    }, 1000);
-  return () => clearInterval(interval);
-  }
+    // console.log(userData)
+    if (connection) {
+      const interval = setInterval(() => {
+        setCounter(counter => counter + 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
   }, [counter]);
 
 
 
   // const {appLoading,appData,client,sensorConnection} = useSelector(state => state.AppReducer);
+
+
+
   function getData() {
     // console.log(userData)
     axios.post("https://camp-coding.tech/smart_home/home/select_rooms_data.php", {
@@ -123,6 +144,7 @@ const Home = ({ navigation }) => {
         for (let i = 0; i < arr.length; i++) {
           let sw = arr[i].switches
           for (let j = 0; j < sw.length; j++) {
+           
             if (sw[j].type == "rgb") {
               let split_topic = sw[j].topic.split("*smart*")
               // console.log(split_topic)
@@ -135,9 +157,10 @@ const Home = ({ navigation }) => {
 
           }
         }
-        // dispatch(setAppData(arr))
+       
         setdata(arr)
         setLoading(false)
+        // dispatch(setAppData(arr))
 
       } else {
         // dispatch(setAppData([]))
@@ -149,6 +172,37 @@ const Home = ({ navigation }) => {
 
 
   }
+  // function getData() {
+  //   axios.get("https://camp-coding.tech/smart_home/select_rooms_data.php").then((res) => {
+  //     console.log(JSON.stringify(res.data.message))
+  //     if (res.data.status == "success") {
+  //       let arr = res.data.message
+  //       for (let i = 0; i < arr.length; i++) {
+  //         let sw=arr[i].switches
+  //         for (let j=0;j<sw.length;j++){
+  //          if( sw[j].type=="rgb"){
+  //           let split_topic=sw[j].topic.split("*smart*")
+  //           // console.log(split_topic)
+  //           sw[j].topic=split_topic[0]
+  //           sw[j].red_topic=split_topic[1]
+  //           sw[j].green_topic=split_topic[2]
+  //           sw[j].blue_topic=split_topic[3]
+  //           // console.log( sw[j])
+  //          }
+          
+  //         }
+  //       }
+  //       setdata(arr)
+  //       setLoading(false)
+  //     } else {
+  //       setdata([])
+  //       setLoading(false)
+  //     }
+  //   })
+     
+   
+    
+  // }
   function Connection() {
     let currentTime = +new Date();
     let clientID = currentTime + uuid.v1();
@@ -156,8 +210,12 @@ const Home = ({ navigation }) => {
     MQTT.createClient({
       // uri: 'mqtt://185.194.217.124:1883',
       clientId: clientID,
-      user: userData.user_name,
-      pass: userData.password,
+      user: userData.connection_user_name,
+      // "MohamedGalal",
+      
+      pass:  userData.connection_pass,
+      // "KmkCA6S*QkGTqrwUU9dD",
+     
       // user:'MohamedSaad',
       //  pass: 'MS_127RTIF_#$%_e',
       protocol: "mqtt",
@@ -192,7 +250,12 @@ const Home = ({ navigation }) => {
 
       //   console.log(msg.data)
       // });
+      // client.on('message', function (msg) {
+      //   // console.log('mqtt.event.message Home', msg);
 
+      //   // console.log(msg?.topic)
+      //   showLocalNotification(msg?.topic)
+      // });
       client.on('connect', function () {
         console.log('connected');
         // dispatch(setClient(client))
@@ -214,13 +277,127 @@ const Home = ({ navigation }) => {
       console.log(err);
     });
   }
-  const [data, setdata] = useState([])
 
-  useEffect(() => {
+  // const sleep = (time) => new Promise((resolve) => setTimeout(() => resolve(), 10000));
+  // const veryIntensiveTask = async (taskDataArguments) => {
+  //   // Example of an infinite loop task
+  //   const { delay } = taskDataArguments;
+  //   await new Promise(async (resolve) => {
+     
+    
+  //     setTimeout(() => {
+        
+  //       let currentTime = +new Date();
+  //       let clientID = currentTime + uuid.v1();
+  //       clientID = clientID.slice(0, 23)
+  //       MQTT.createClient({
+  //         // uri: 'mqtt://185.194.217.124:1883',
+  //         clientId: clientID,
+  //         user: userData.connection_user_name,
+  //         // "MohamedGalal",
+          
+  //         pass:  userData.connection_pass,
+  //         // "KmkCA6S*QkGTqrwUU9dD",
+         
+  //         // user:'MohamedSaad',
+  //         //  pass: 'MS_127RTIF_#$%_e',
+  //         protocol: "mqtt",
+  //         tls: false,
+  //         host: "185.194.217.124",
+  //         port: 1883,
+  //         // will:true,
+  //         // willQos:0,
+  //         // willRetainFlag:false,
+  //         // willtopic:"I4TCShSFR40XTUWVXYZ4",
+  //         auth: true,
+  //         automaticReconnect: true,
+    
+    
+  //       }).then(function (client) {
+  //         // console.log(client)
+  //         client.on('closed', function () {
+  //           console.log('mqtt.event.closed');
+  //           // dispatch(modifySensorConn(false))
+  //           setConnection(false)
+  //         });
+    
+  //         client.on('error', function (msg) {
+  //           console.log('mqtt.event.error', msg);
+  //           // dispatch(modifySensorConn(false))
+    
+  //           setConnection(false)
+  //         });
+    
+         
+  //         client.on('message', function (msg) {
+  //           // console.log('mqtt.event.message Home', msg);
+    
+  //           console.log(msg?.topic)
+  //           // showLocalNotification(msg?.topic)
+  //         });
+  //         client.on('connect', function () {
+  //           console.log(data.sensors);
+  //           // client.subscribe(data.sensors[0].topic,
+  //           //   0)
+            
+    
+  //         });
+    
+    
+  //         client.connect();
+    
+    
+    
+  //       }).catch(function (err) {
+  //         console.log(err);
+  //       });
+  //     }, 20000)
+
+  //     await sleep(delay);
+  //     await BackgroundService.stop();
+  //   });
+  // };
+  // async function showLocalNotification(data) {
+  //   try {
+  //     const notification = await notifee.createChannel({
+  //       id: '1',
+  //       name: 'default',
+  //     });
+
+  //     await notifee.displayNotification({
+  //       title: 'i4technology',
+  //       body: data+"mmm",
+  //       android: {
+  //         channelId: "1",
+  //       },
+  //     });
+  //   } catch (error) {
+  //     console.error('Error displaying notification:', error);
+  //   }
+
+  // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+  useEffect(async() => {
+    
     const unsubscribe = navigation.addListener('focus', () => {
       getData()
       Connection()
     });
+    await BackgroundService.start(veryIntensiveTask, options);
 
     return unsubscribe;
 
@@ -240,14 +417,14 @@ const Home = ({ navigation }) => {
 
 
 
-  function addroom() {
+  function addroom(image) {
 
     setAddLoading(true)
 
     axios.post("https://camp-coding.tech/smart_home/home/add_room.php", {
       "user_id": userData.user_id,
       "name": roomname,
-      "image": "https://bondhome.io/wp-content/uploads/2020/08/Post_30_Blog_03_BOND.png"
+      "image": image
     }).then((res) => {
       console.log(res)
       if (res.data.status == "success") {
@@ -255,6 +432,8 @@ const Home = ({ navigation }) => {
         utils.toastAlert("success", "Room Add Successfully")
         setAddLoading(false)
         setshow_modal(false)
+        setImageUpdated(false)
+        setroomname("")
       } else {
         utils.toastAlert("error", "error happen try agian later")
         setAddLoading(false)
@@ -264,11 +443,11 @@ const Home = ({ navigation }) => {
     })
   }
 
-  function deleteRoom(){
+  function deleteRoom() {
     setDelLoading(true)
 
     axios.post("https://camp-coding.tech/smart_home/home/delete_room.php", {
-      room_id:editRoomObj.room_id
+      room_id: editRoomObj.room_id
     }).then((res) => {
       console.log(res)
       if (res.data.status == "success") {
@@ -280,20 +459,21 @@ const Home = ({ navigation }) => {
       } else {
         utils.toastAlert("error", "error happen try agian later")
         setDelLoading(false)
-       
+
       }
       // getData()
 
     })
   }
 
-  function editRoom(){
+  function editRoom(image) {
     setAddLoading(true)
+    // console.log(image)
 
     axios.post("https://camp-coding.tech/smart_home/home/update_room.php", {
-      room_id:editRoomObj.room_id,
+      room_id: editRoomObj.room_id,
       "name": roomname,
-      "image": "https://bondhome.io/wp-content/uploads/2020/08/Post_30_Blog_03_BOND.png"
+      "image": image
     }).then((res) => {
       console.log(res)
       if (res.data.status == "success") {
@@ -302,6 +482,8 @@ const Home = ({ navigation }) => {
         setAddLoading(false)
         setshow_modal(false)
         setEditRoomObj(null)
+        setImageUpdated(false)
+        setroomname("")
       } else {
         utils.toastAlert("error", "error happen try agian later")
         setAddLoading(false)
@@ -310,7 +492,7 @@ const Home = ({ navigation }) => {
 
     })
   }
-  
+
   function openPichker() {
     ImageCropPicker.openPicker({
       includeBase64: true,
@@ -321,10 +503,48 @@ const Home = ({ navigation }) => {
       cropperStatusBarColor: COLORS.primary,
     }).then(image => {
       setNewImage(image);
+      setImageUpdated(true)
     });
   }
 
 
+  async function _uploadImage() {
+    setAddLoading(true)
+    RNFetchBlob.fetch(
+      'POST',
+       'https://camp-coding.tech/smart_home/image_uplouder.php',
+      {
+        Authorization: 'Bearer access-token',
+        otherHeader: 'foo',
+        'Content-Type': 'octet-stream',
+      },
+      [
+         {
+          name: 'image',
+          filename: 'avatar.png',
+          type: 'image/png',
+          data: newImage['data'],
+        },
+        // { name : 'panar_text', data : selBanner}
+      ],
+    ).then(res => {
+      // console.log(JSON.parse(res.data))
+      if (JSON.parse(res.data).startsWith('https:')) {
+        // console.log(res.data)
+        editRoomObj !== null ? editRoom(res.data) :addroom(res.data)
+        // console.log(res.data)
+        // _uploadBanner(JSON.parse(res.data));
+      } else {
+        setAddLoading(false)
+        utils.toastAlert("error", "error happen try agian later")
+        // setLoading(false);
+      }
+    });
+
+   
+
+  
+  }
 
 
 
@@ -338,6 +558,14 @@ const Home = ({ navigation }) => {
     console.log('onSpeechStart: ', e);
 
     setStarted('√')
+
+    setEnd('')
+    setPartialResults([])
+    setResults([])
+    setRecognized('')
+    setPitch('')
+    setStarted('')
+    setError('')
 
   };
 
@@ -360,12 +588,13 @@ const Home = ({ navigation }) => {
   const onSpeechResults = (e) => {
     console.log('onSpeechResults: ', e);
     setResults(e.value);
+    setEnd("end")
   };
 
   const onSpeechPartialResults = (e) => {
     console.log('onSpeechPartialResults: ', e);
     setPartialResults(e.value);
-    
+
   };
 
   const onSpeechVolumeChanged = (e) => {
@@ -436,14 +665,145 @@ const Home = ({ navigation }) => {
   }, [])
 
   useEffect(() => {
-    if(partialResults.includes("open")||results.includes("open")){
-      Alert.alert("open")
-    }else if(partialResults.includes("open")||results.includes("go to")){
-      Alert.alert("go to")
+    // console.log(results[0]?.includes("go to"))
+    if (results[0]?.toLowerCase().includes("open")) {
+      // Alert.alert("open")
+      // console.log(results[0])
+
+      for (let i = 0; i < data.length; i++) {
+        let sw = data[i]?.switches
+        let sensor = data[i]?.sensors
+        let device = data[i]?.devices
+        // console.log(sw)
+        for (let j = 0; j < sw.length; j++) {
+
+
+          // console.log()
+          // console.log( results[0]?.replace("open ", ""))
+          if (testChar(sw[j]?.name, results[0]?.toLowerCase().replace("open ", ""))) {
+            // console.log(sw[j]?.name.toLowerCase())
+            client.publish(sw[j]?.topic, "1", 2, true)
+            utils.toastAlert("success",`${sw[j]?.name} opend successfully`)
+            setVoiceModal(false)
+            break;
+          }
+        }
+        for (let x = 0; x < sensor.length; x++) {
+          if (testChar(sensor[x]?.name, results[0]?.toLowerCase().replace("open ", ""))) {
+            client.publish(sensor[x]?.topic, "1", 2, true)
+            utils.toastAlert("success",`${sensor[x]?.name} opend successfully`)
+            setVoiceModal(false)
+            // console.log(sensor[x]?.name.toLowerCase())
+            break;
+          }
+        }
+        for (let k = 0; k < device.length; k++) {
+          if (testChar(device[k]?.name, results[0]?.toLowerCase().replace("open ", ""))) {
+            // console.log(device[k]?.name.toLowerCase())
+            client.publish(device[k]?.topic, "1", 2, true)
+            utils.toastAlert("success",`${device[k]?.name} opend successfully`)
+            setVoiceModal(false)
+            break;
+          }
+        }
+
+
+
+      }
+      _destroyRecognizer()
+    } else if (results[0]?.includes("go to")) {
+      // go_to_fun(results[0])
+
+      // console.log(data[0].name.toLowerCase())
+      // console.log(results[0]?.replace("go to ",""))
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].name.toLowerCase() === results[0]?.replace("go to ", "")) {
+          setVoiceModal(false)
+          navigation.navigate('RoomDeatils', {
+            psdata: data[i],
+            client: client,
+
+          });
+          break;
+        }
+      }
+      _destroyRecognizer()
+    }else  if (results[0]?.toLowerCase().includes("close")) {
+      // Alert.alert("open")
+      // console.log(results[0])
+
+      for (let i = 0; i < data.length; i++) {
+        let sw = data[i]?.switches
+        let sensor = data[i]?.sensors
+        let device = data[i]?.devices
+        // console.log(sw)
+        for (let j = 0; j < sw.length; j++) {
+
+
+          // console.log()
+          // console.log( results[0]?.replace("open ", ""))
+          if (testChar(sw[j]?.name, results[0]?.toLowerCase().replace("close ", ""))) {
+            // console.log(sw[j]?.name.toLowerCase())
+            client.publish(sw[j]?.topic, "0", 2, true)
+            utils.toastAlert("success",`${sw[j]?.name} closed successfully`)
+            setVoiceModal(false)
+            break;
+          }
+        }
+        for (let x = 0; x < sensor.length; x++) {
+          if (testChar(sensor[x]?.name, results[0]?.toLowerCase().replace("close ", ""))) {
+            client.publish(sensor[x]?.topic, "0", 2, true)
+            // console.log(sensor[x]?.name.toLowerCase())
+            utils.toastAlert("success",`${sensor[x]?.name} closed successfully`)
+            setVoiceModal(false)
+            break;
+          }
+        }
+        for (let k = 0; k < device.length; k++) {
+          if (testChar(device[k]?.name, results[0]?.toLowerCase().replace("close ", ""))) {
+            // console.log(device[k]?.name.toLowerCase())
+            client.publish(device[k]?.topic, "0", 2, true)
+            utils.toastAlert("success",`${device[k]?.name} closed successfully`)
+            setVoiceModal(false)
+            break;
+          }
+        }
+
+
+
+      }
+      _destroyRecognizer()
+    } 
+  }, [results])
+
+
+  function testChar(str, substring) {
+    // console.log(str)
+    // console.log(substring)
+    var arr_str = str+"".toLowerCase().split('');
+    var arr_substr = substring.toLowerCase().split('');
+  
+    return arr_substr.filter(function(each) {
+      return arr_str.indexOf(each) === -1;
+    }).length === 0;
+  }
+  const go_to_fun = (result) => {
+    console.log("hhh")
+    let res = result?.split(" ")[2]
+    console.log(data[0].name.toLowerCase === res)
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].name.toLowerCase === res) {
+        navigation.navigate('RoomDeatils', {
+          psdata: data[i],
+          client: client,
+
+        });
+        break;
+      }
     }
-  }, [results,partialResults])
 
 
+  }
 
 
   return (
@@ -481,11 +841,13 @@ const Home = ({ navigation }) => {
           }}>
           {userData.user_name}
         </Text>
+        
         <View style={{
           alignItems: "center",
           flexDirection: "row",
           justifyContent: "space-between"
         }}>
+
           <TouchableOpacity
             onPress={() => {
               setVoiceModal(true)
@@ -507,14 +869,17 @@ const Home = ({ navigation }) => {
 
 
           </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
-              setshow_modal(true);
-            }}>
-            <Image source={icons.add} style={{ width: RFValue(50), height: RFValue(50) }} resizeMode='contain' />
-          </TouchableOpacity>
+          {(userData.user_id == 3) &&
+            <TouchableOpacity
+              onPress={() => {
+                setshow_modal(true);
+                setNewImage({})
+              }}>
+              <Image source={icons.add} style={{ width: RFValue(50), height: RFValue(50) }} resizeMode='contain' />
+            </TouchableOpacity>
+}
         </View>
+         
 
       </View>
       <View
@@ -599,7 +964,7 @@ const Home = ({ navigation }) => {
             Rooms
           </Text>
         </View>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Text
             style={{
               ...FONTS.body4,
@@ -610,7 +975,7 @@ const Home = ({ navigation }) => {
             See all
           </Text>
 
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
       </View>
 
@@ -626,8 +991,9 @@ const Home = ({ navigation }) => {
               {data.map((item, index) => (
                 <TouchableOpacity
                   onPress={() => {
+                    console.log(client)
                     if (client !== null) {
-                      console.log(item)
+                      console.log(client)
                       navigation.navigate('RoomDeatils', {
                         psdata: item,
                         client: client,
@@ -651,7 +1017,8 @@ const Home = ({ navigation }) => {
                       setshow_modal(true)
                       setEditRoomObj(item)
                       setroomname(item.name)
-                      setNewImage(item.image)
+                      setNewImage({path:item.image.replaceAll("\"","").trim()})
+                      console.log({path:item.image.replaceAll("\"","")})
                     }}
                     style={{
                       width: RFValue(35),
@@ -681,7 +1048,7 @@ const Home = ({ navigation }) => {
                   </TouchableOpacity>
                   <Image
                     source={{
-                      uri: item.image,
+                      uri: item?.image.replaceAll("\"","").trim()
                     }}
                     style={{
                       height: RFValue(180),
@@ -741,12 +1108,12 @@ const Home = ({ navigation }) => {
           setshow_modal(false);
           setEditRoomObj(null)
         }}
-        animationType="slide">
+        animationType="slider">
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
-            alignItems:"center"
+            alignItems: "center"
           }}
         >
           <TouchableOpacity
@@ -760,7 +1127,7 @@ const Home = ({ navigation }) => {
             <Image source={icons.Backview} />
           </TouchableOpacity>
 
-          {editRoomObj !== null && <TouchableOpacity
+          {editRoomObj !== null&& userData.user_id == 3  && <TouchableOpacity
             onPress={() => {
               deleteRoom()
             }}
@@ -785,7 +1152,7 @@ const Home = ({ navigation }) => {
 
         </View>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={{
             alignItems: 'center',
             backgroundColor: COLORS.gray3,
@@ -800,7 +1167,7 @@ const Home = ({ navigation }) => {
             <>
               <Image
                 source={{
-                  uri:editRoomObj!==null?newImage : newImage?.path,
+                  uri: newImage?.path,
                 }}
                 style={{
                   width: RFValue(200),
@@ -822,7 +1189,7 @@ const Home = ({ navigation }) => {
               </Text>
             </>
           )}
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <TextInput
           style={{
             width: '90%',
@@ -846,8 +1213,11 @@ const Home = ({ navigation }) => {
 
         <TouchableOpacity
           onPress={() => {
-            editRoomObj!==null?editRoom():
-            addroom();
+           
+            if(imageUpdated) _uploadImage();
+            else{
+              editRoomObj !== null ? editRoom(newImage.path) :addroom(newImage.path)
+            }
           }}
           style={{
             width: 250,
@@ -871,7 +1241,7 @@ const Home = ({ navigation }) => {
                   color: COLORS.white,
                   fontWeight: "bold"
                 }}>
-               {editRoomObj!==null?" Edit Room":" Add Room"}
+                {editRoomObj !== null ? " Edit Room" : " Add Room"}
               </Text>
           }
 
@@ -937,18 +1307,32 @@ const Home = ({ navigation }) => {
         }} activeOpacity={0} style={styles.container}>
           <View style={{
             width: "100%",
-            height: "35%",
+            height: "50%",
             backgroundColor: COLORS.white,
             alignItems: "center",
-            justifyContent: "center",
+            // justifyContent: "center",
             borderTopLeftRadius: RFValue(25),
             borderTopRightRadius: RFValue(25),
+            paddingTop:SIZES.padding
           }}>
+
+            
+
             <Text style={styles.welcome}>Welcome, How Can I Help You ?</Text>
-            {/* <Text style={styles.instructions}>
-          Press the button and start speaking.
-        </Text> */}
-            {/* <Text style={styles.stat}>{`Started: ${started}`}</Text> */}
+
+            <View 
+            style={{width:"100%",height:RFValue(2),backgroundColor:COLORS.gray3,alignSelf:"center",marginBottom:SIZES.base}}
+            ></View>
+            <Text style={{...FONTS.body4,color:COLORS.primary,fontWeight:"bold"}}>
+             Tips
+            </Text>
+
+            <Text style={{...FONTS.body4,color:COLORS.black}}>Say <Text style={{...FONTS.body4,color:COLORS.primary,fontWeight:"bold"}}>go to (name of page)</Text> for navigation</Text>
+            <Text style={{...FONTS.body4,color:COLORS.black}}>Say <Text style={{...FONTS.body4,color:COLORS.primary,fontWeight:"bold"}}>open (device name)</Text> for open device</Text>
+            <Text style={{...FONTS.body4,color:COLORS.black}}>Say <Text style={{...FONTS.body4,color:COLORS.primary,fontWeight:"bold"}}>close (device name)</Text> for close device</Text>
+            <View 
+            style={{width:"100%",height:RFValue(2),backgroundColor:COLORS.gray3,alignSelf:"center",marginVertical:SIZES.base}}
+            ></View>
             {/* <Text style={styles.stat}>{`Recognized: ${
           recognized
         }`}</Text> */}
@@ -963,13 +1347,13 @@ const Home = ({ navigation }) => {
               );
             })}
             {/* <Text style={styles.stat}>Partial Results</Text> */}
-            {partialResults.map((result, index) => {
+            {/* {partialResults.map((result, index) => {
               return (
                 <Text key={`partial-result-${index}`} style={styles.stat}>
                   {result}
                 </Text>
               );
-            })}
+            })} */}
             {/* <Text style={styles.stat}>{`End: ${end}`}</Text> */}
             {/* <TouchableHighlight onPress={_startRecognizing}>
           <Image style={styles.button} source={icons.add} />
@@ -988,9 +1372,9 @@ const Home = ({ navigation }) => {
                 alignItems: "center",
                 justifyContent: "center"
               }}>
-
+              {end=="end"|| end==""?
               <MaterialIcons name={"keyboard-voice"} size={RFValue(15)} color={COLORS.white} />
-
+              :<ActivityIndicator size={10} color={COLORS.white} />}
 
             </TouchableHighlight>
             <TouchableHighlight onPress={_stopRecognizing}>
@@ -1042,7 +1426,7 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+    marginBottom: RFValue(15),
   },
   action: {
     textAlign: 'center',

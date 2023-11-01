@@ -18,9 +18,33 @@ async function getFirst() {
 async function setFirst(data) {
   return await utils.set('first', data);
 }
+
+
+async function getSwitchHistory() {
+  return await utils.get('swhistory');
+}
+async function setSwitchHistory(data) {
+  return await utils.set('swhistory', data);
+}
+
+async function getSensorHistory() {
+  return await utils.get('senhistory');
+}
+async function setSensorHistory(data) {
+  return await utils.set('senhistory', data);
+}
+async function getDevicesHistory() {
+  return await utils.get('devhistory');
+}
+async function setDevicesHistory(data) {
+  return await utils.set('devhistory', data);
+}
+
+
 async function logout() {
   return await utils.set('account', null);
 }
+
 
 export default {
   logout,
@@ -29,4 +53,9 @@ export default {
   getFirst,
   setFirst,
   //   FcmToken,
+  setSensorHistory,
+  setDevicesHistory,
+  setSwitchHistory,
+  getDevicesHistory,getSensorHistory,
+  getSwitchHistory
 };

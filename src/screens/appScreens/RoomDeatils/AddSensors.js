@@ -72,7 +72,7 @@ const AddSensors = ({ navigation, route }) => {
       let data_send = {
         room_id: room_id,
         name: name,
-        type: value == "Value" ? "" : "Slider",
+        type: value == "Value" ? "" : "slider",
         value: value == "Value" ? sensor_val : slider_min_val + "**smart**" + slider_max_val,
         topic: topic
       }

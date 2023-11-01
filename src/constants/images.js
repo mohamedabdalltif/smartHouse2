@@ -8,6 +8,7 @@ const intro1 = require('../assets/images/intro1.png');
 const intro2 = require('../assets/images/intro2.png');
 const intro3 = require('../assets/images/intro3.png');
 const Register_Success = require('../assets/images/Register_Success.png');
+const splash = require('../assets/images/splash.png');
 
 
 export default {
@@ -20,5 +21,6 @@ export default {
   intro1,
   intro2,
   intro3,
-  Register_Success
+  Register_Success,
+  splash
 };

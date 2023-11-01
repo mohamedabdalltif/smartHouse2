@@ -1,27 +1,29 @@
-import React, {useState, useEffect} from 'react';
-import {View, Platform, StatusBar,Modal, Text} from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Platform, StatusBar, Modal, Text, AppState } from 'react-native';
 import Toast from 'react-native-toast-message';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useDispatch, useSelector} from 'react-redux';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   modifyIsFirst,
   modifyNetInfo,
   setUser,
-  
+
 } from './src/redux/reducers/UserReducer';
 
 import Auth from './src/Services';
 import NetInfo from '@react-native-community/netinfo';
-import {COLORS, FONTS, SIZES, lotties} from './src/constants';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
-import {AppStack, AuthStack} from './src/navigation';
+import { COLORS, FONTS, SIZES, lotties } from './src/constants';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { AppStack, AuthStack } from './src/navigation';
 import Onboarding from './src/screens/Onboarding';
 import SplashScreen from './SplashScreen';
 import { MenuProvider } from 'react-native-popup-menu';
 import { RFValue } from 'react-native-responsive-fontsize';
 import AnimatedLottieView from 'lottie-react-native';
-
+import BackgroundTimer from 'react-native-background-timer';
+import notifee from '@notifee/react-native';
+// import BackgroundService from 'react-native-background-actions';
 const Stack = createStackNavigator();
 const ObBoardStack = () => {
   return (
@@ -41,12 +43,22 @@ const ObBoardStack = () => {
 
 const App = () => {
   const dispatch = useDispatch();
-  const {login, first} = useSelector(state => state.UserReducer);
-  const {appLoading} = useSelector(state => state.AppReducer);
+  const { login, first } = useSelector(state => state.UserReducer);
+  const { appLoading } = useSelector(state => state.AppReducer);
   const [loginChk, setloginChk] = useState(true);
   const [isNetworkConnect, setIsNetworkConnect] = useState(true);
-  useEffect(() => {
-   
+  // const appState = useRef(AppState.currentState);
+  useEffect(async () => {
+
+
+
+
+
+
+
+
+    // await BackgroundService.updateNotification({taskDesc: 'momo'}); 
+
     getUser();
     // setConnection()
     // getData()
@@ -54,23 +66,29 @@ const App = () => {
     NetInfo.addEventListener(state => {
       setIsNetworkConnect(!state.isInternetReachable);
       // if (state.isInternetReachable)
-        // utils.toastAlert('success', 'Your internet connection was restored');
-    
-    });
-  }, []);
+      // utils.toastAlert('success', 'Your internet connection was restored');
 
-  const getUser = async () => {
+    });
    
+     
+    
+
+
+  }, []);
+ 
+  const getUser = async () => {
+
     let data = await Auth.getAccount();
     let isFirst = await Auth.getFirst();
-    
+// data=null
+// isFirst="1"
     if (isFirst != '1') {
       dispatch(modifyIsFirst(true));
     }
     if (data != null) {
       dispatch(setUser(data));
     }
-    
+
 
     setTimeout(() => {
       setloginChk(false);
@@ -82,9 +100,9 @@ const App = () => {
   }
 
 
-  
 
-  
+
+
 
   return (
     // <SafeAreaView style={{flex: 1}}>
@@ -96,28 +114,28 @@ const App = () => {
     // </SafeAreaView>
 
 
-<SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
 
-<StatusBar translucent backgroundColor={COLORS.black}/>
-<MenuProvider>
-  <NavigationContainer>
-    {/* {first ? <ObBoardStack /> : 
+      <StatusBar translucent backgroundColor={COLORS.black} />
+      <MenuProvider>
+        <NavigationContainer>
+          {/* {first ? <ObBoardStack /> : 
     */}
-    
-    { login ? 
-     
-   <>
-  
-    <AppStack /> 
 
-    </>
-  
-    : <AuthStack />
-     }  
-  </NavigationContainer>
-  <Toast />
-</MenuProvider>
-{/* <Modal transparent visible={isNetworkConnect}>
+          {login ?
+
+            <>
+
+              <AppStack />
+
+            </>
+
+            : <AuthStack />
+          }
+        </NavigationContainer>
+        <Toast />
+      </MenuProvider>
+      {/* <Modal transparent visible={isNetworkConnect}>
           <View
             style={{
               flex: 1,
@@ -162,7 +180,7 @@ const App = () => {
         </Modal> */}
 
 
-</SafeAreaView>
+    </SafeAreaView>
 
 
 

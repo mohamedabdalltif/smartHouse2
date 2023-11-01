@@ -44,6 +44,7 @@ import AnimatedLottieView from 'lottie-react-native';
 import axios from 'axios';
 
 const EditSwitche = ({ navigation, route }) => {
+    const { userData } = useSelector(state => state.UserReducer);
     const { psdata, type } = route.params;
     const [name, setName] = useState(psdata.name);
     const [topic, setTopic] = useState(psdata.topic);
@@ -65,10 +66,13 @@ const EditSwitche = ({ navigation, route }) => {
     const editSwitch = () => {
         setLoading(true)
         // console.log(psdata)
+
         if (
             (type === "" && name !== '' && topic !== '')
             ||
             (type === "rgb" && name !== '' && topic !== '' && redtopic !== '' && greentopic !== '' && bluetopic !== '')
+            ||
+            ( name !== '' && userData.user_id!=3)
         ) {
             const data_send = {
                 switch_id: psdata.switch_id,
@@ -157,7 +161,7 @@ const EditSwitche = ({ navigation, route }) => {
                         <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
                     </TouchableOpacity>
 
-                    <TouchableOpacity
+                    {(userData.user_id == 3) && <TouchableOpacity
                         onPress={() => {
                            deleteSwitch()
                         }}
@@ -179,6 +183,7 @@ const EditSwitche = ({ navigation, route }) => {
 
 
                     </TouchableOpacity>
+                    }
                     {/* <View /> */}
 
 
@@ -227,7 +232,7 @@ const EditSwitche = ({ navigation, route }) => {
                     }}
                 />
 
-                <TextInput
+{(userData.user_id == 3) && <TextInput
                     style={{
                         width: '90%',
                         // height: 50,
@@ -245,8 +250,8 @@ const EditSwitche = ({ navigation, route }) => {
                         setTopic(value)
                     }}
                 />
-
-                {type == "rgb" &&
+                }
+                {type == "rgb" && userData.user_id==3&&
                     <>
 
 

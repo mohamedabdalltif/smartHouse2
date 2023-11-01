@@ -13,6 +13,7 @@ import {
   StatusBar,
 
   SafeAreaView,
+  Image,
 
 } from 'react-native';
 
@@ -41,8 +42,8 @@ import AnimatedLottieView from 'lottie-react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { useDispatch } from 'react-redux';
-
-
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import { RNCamera } from 'react-native-camera';
 
 import { setUser } from '../../../redux/reducers/UserReducer';
 import Auth from '../../../Services';
@@ -53,92 +54,71 @@ const SignInHome = ({ navigation, route }) => {
   const [Email, setEmail] = useState('')
   const [Password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-
+  const [isFlash, setIsFlash] = React.useState(false);
+  const [show_modal, setshow_modal] = React.useState(false)
 
 
   const signIn = () => {
-   setLoading(true)
+    setLoading(true)
     if (Email === '' || Password === '') {
       utils.toastAlert("error", "Please check values")
       setLoading(false)
       return;
     }
 
-    let currentTime = +new Date();
-    let clientID = currentTime + uuid.v1();
-    clientID = clientID.slice(0, 23)
-    MQTT.createClient({
-      // uri: 'mqtt://185.194.217.124:1883',
-      clientId: clientID,
-      user: Email,
-      // 'MohamedGalal',
-      pass: Password,
-      // 'KmkCA6S*QkGTqrwUU9dD',
-      // user:'MohamedSaad',
-      //  pass: 'MS_127RTIF_#$%_e',
-      protocol: "mqtt",
-      tls: false,
-      host: "185.194.217.124",
-      port: 1883,
-      auth: true,
-      automaticReconnect: true,
 
+    axios.post("https://camp-coding.tech/smart_home/auth/user_login.php", {
+      email: Email,
+      password: Password,
+    }).then((res) => {
+      console.log(res.data)
+      if (res.data.status === "success") {
 
-    }).then(function (client) {
+        if (res.data.massage.user_id == 3){
+          navigation.navigate("AdminContinueSign",{
+            psData:res.data.massage
+          })
+          setLoading(false)
+        }else{
+          dispatch(setUser(res.data.massage))
+          storedata((res.data.massage))
+          utils.toastAlert("success", "Login Done Successfully")
+          setLoading(false)
+        }
+         
 
-      client.on('error', function (msg) {
-        utils.toastAlert("error", "Not Authorized")
+      } else {
+        utils.toastAlert("error", "error happen try again later")
         setLoading(false)
-        return;
-      });
-      client.on('connect', function () {
-        axios.post("https://camp-coding.tech/smart_home/auth/user_signup.php", {
-          email: Email,
-          password: Password,
-          name: Email
-        }).then((res)=>{
-          console.log(res.data)
-          if(res.data.status==="success"){
+      }
+    })
+    // // navigation.navigate('MainStack')
+    // let user = {
+    //   user_email: null,
+    //   user_name: Email,
+    //   user_photo: null,
+    //   user_token: null,
+    //   user_password: Password
+    // }
 
-            client.disconnect()
-             dispatch(setUser(JSON.parse(JSON.stringify(res.data.message))))
-             storedata(JSON.parse(JSON.stringify(res.data.message)))
-             utils.toastAlert("success", "Login Done Successfully")
-             setLoading(false)
-             
-          }else{
-            utils.toastAlert("error", "error happen try again later")
-            setLoading(false)
-          }
-        })
-        // // navigation.navigate('MainStack')
-        // let user = {
-        //   user_email: null,
-        //   user_name: Email,
-        //   user_photo: null,
-        //   user_token: null,
-        //   user_password: Password
-        // }
-
-        // dispatch(setUser(user))
-        // // // navigation.navigate("FillProfile")
-        // storedata(user);
-        
-      });
-      client.connect();
+    // dispatch(setUser(user))
+    // // // navigation.navigate("FillProfile")
+    // storedata(user);
 
 
-
-    }).catch(function (err) {
-      utils.toastAlert("error", "error happen try again later")
-      setLoading(false)
-    });
 
 
   }
 
 
-
+  function onSuccess(e) {
+    console.log(e.data)
+    // Alert.alert('Home', 'device added successfly')
+    let res = e?.data?.split(",")
+    setEmail(res[0])
+    setPassword(res[1])
+    setshow_modal(false)
+  };
 
 
   async function storedata(data) {
@@ -174,6 +154,7 @@ const SignInHome = ({ navigation, route }) => {
             paddingHorizontal: SIZES.margin
           }}
         >
+
 
 
 
@@ -239,22 +220,42 @@ const SignInHome = ({ navigation, route }) => {
               }}
 
             />
+            <View style={{
+              flexDirection: "row", alignItems: "center", marginTop: SIZES.margin * 3,
+              marginBottom: SIZES.margin,
+              justifyContent: "space-between"
+            }}>
 
-            <TextButton
-              onPress={() => signIn()}
-              buttonContainerStyle={{
-                backgroundColor: COLORS.black,
-                width: "75%",
-                alignSelf: "center",
-                marginTop: SIZES.margin * 3,
-                height: RFValue(55),
-                borderRadius: RFValue(50),
-                marginBottom: SIZES.margin
-              }}
-              loading={loading}
-              label={"Login"}
 
-            />
+              <TextButton
+                onPress={() => signIn()}
+                buttonContainerStyle={{
+                  backgroundColor: COLORS.black,
+                  width: "75%",
+                  alignSelf: "center",
+
+                  height: RFValue(55),
+                  borderRadius: RFValue(50),
+
+                }}
+                loading={loading}
+                label={"Login"}
+
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setshow_modal(true)
+                }}
+              >
+                <Image
+                  source={icons.code}
+                  style={{
+                    width: RFValue(45),
+                    height: RFValue(45)
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
 
 
           </ScrollView>
@@ -264,6 +265,90 @@ const SignInHome = ({ navigation, route }) => {
 
 
       </ImageBackground>
+
+      <Modal
+        visible={show_modal}
+        onRequestClose={() => {
+          setshow_modal(false);
+
+        }}
+        animationType='slide'
+      >
+
+
+
+        <TouchableOpacity
+          onPress={() => {
+            setshow_modal(false);
+          }}
+          style={{
+            margin: 15,
+          }}>
+          <Image source={icons.Backview} />
+        </TouchableOpacity>
+
+
+
+        <QRCodeScanner
+          reactivate={true}
+          showMarker={true}
+          markerStyle={{
+            borderRadius: 20,
+            borderColor: COLORS.red,
+          }}
+          flashMode={
+            isFlash
+              ? RNCamera.Constants.FlashMode.torch
+              : RNCamera.Constants.FlashMode.off
+          }
+          onRead={e => {
+            onSuccess(e);
+          }}
+          topContent={
+            <Text style={[{
+              flex: 1,
+              fontSize: 18,
+              padding: 32,
+              color: '#777',
+            }, {
+              textAlign: 'center'
+            }]}>
+              Please move your camera {'\n'} over the QR Code
+            </Text>
+          }
+
+          bottomContent={
+            <TouchableOpacity
+              onPress={() => {
+                setIsFlash(!isFlash);
+              }}
+              style={{
+                backgroundColor: COLORS.red,
+                width: 100,
+                height: 100,
+                borderRadius: 120 / 2,
+                alignItems: 'center',
+                justifyContent: 'center',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}>
+              <MaterialCommunityIcons
+                name={isFlash ? 'flash' : 'flash-off'}
+                size={40}
+                color={COLORS.white}
+              />
+            </TouchableOpacity>
+          }
+        />
+
+
+      </Modal>
 
 
     </SafeAreaView>

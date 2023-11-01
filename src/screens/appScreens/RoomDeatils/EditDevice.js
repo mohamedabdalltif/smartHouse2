@@ -42,6 +42,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AnimatedLottieView from 'lottie-react-native';
 
 const EditDevice = ({ navigation, route }) => {
+    const { userData } = useSelector(state => state.UserReducer);
     const { psdata, type } = route.params;
     const [name, setName] = useState(psdata.name);
     const [topic, setTopic] = useState(psdata.topic);
@@ -135,7 +136,7 @@ const EditDevice = ({ navigation, route }) => {
                     >
                         <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {(userData.user_id == 3) && <TouchableOpacity
                         onPress={() => {
                            deleteDevice()
                         }}
@@ -158,7 +159,7 @@ const EditDevice = ({ navigation, route }) => {
 
                     </TouchableOpacity>
 
-
+}
 
                 </View>
 
@@ -210,7 +211,7 @@ const EditDevice = ({ navigation, route }) => {
                     }}
                 />
 
-                <TextInput
+{(userData.user_id == 3) && <TextInput
                     style={{
                         width: '90%',
                         // height: 50,
@@ -228,6 +229,7 @@ const EditDevice = ({ navigation, route }) => {
                         setTopic(value)
                     }}
                 />
+            }
 
                 <TouchableOpacity
                     onPress={() => {

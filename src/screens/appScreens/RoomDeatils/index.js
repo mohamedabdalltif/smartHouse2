@@ -25,6 +25,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 
 import LottieView from 'lottie-react-native';
+import notifee from '@notifee/react-native';
 
 import { COLORS, FONTS, icons, images, lotties, SIZES } from '../../../constants';
 // import DatePicker from 'react-native-date-picker';
@@ -51,8 +52,11 @@ import {
   setdeviceAdded
 
 } from '../../../redux/reducers/AppReducer';
+import Services from '../../../Services';
 
 const RoomDeatils = ({ navigation, route }) => {
+
+  const { userData } = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
   // const {appLoading,appData,client,sensorConnection} = useSelector(state => state.AppReducer);
   const { psdata, client } = route.params;
@@ -64,49 +68,106 @@ const RoomDeatils = ({ navigation, route }) => {
   const [max_value, setMax_value] = useState(1);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', async() => {
+      // let sw=await Services.getSwitchHistory()
+      // let sen=await Services.getSensorHistory()
+      // let dev=await Services.getDevicesHistory()
+    //  console.log(sw)
       setSwitchs(psdata.switches)
       setSensors(psdata.sensors)
       setDevices(psdata.devices)
       for (let j = 0; j < psdata?.switches.length; j++) {
-        client?.subscribe(psdata.switches[j].topic, 0)
+        client?.subscribe(psdata.switches[j].topic, 2)
+        client?.subscribe(psdata.switches[j].topic + "/CONNECTION", 2)
 
       }
       for (let x = 0; x < psdata?.sensors.length; x++) {
-        client?.subscribe(psdata.sensors[x].topic, 0)
+        client?.subscribe(psdata.sensors[x].topic, 2)
+        client?.subscribe(psdata.sensors[x].topic + "/CONNECTION", 2)
         // console.log(psdata.sensors[x].topic)
       }
       for (let k = 0; k < psdata?.devices.length; k++) {
-        client?.subscribe(psdata.devices[k].topic, 0)
+        client?.subscribe(psdata.devices[k].topic, 2)
+        client?.subscribe(psdata.devices[k].topic + "/CONNECTION", 2)
         // console.log(psdata.devices[k].topic)
       }
 
       client.on('message', function (msg) {
         console.log('mqtt.event.message', msg);
+        
         psdata?.switches?.filter((state, indx) => {
           // console.log(msg.data)
           if (psdata?.switches[indx]?.topic === msg?.topic) {
             // console.log(msg.data==="0")
+            // console.log("here")
             let arr = [...psdata.switches]
 
             arr[indx].on = (msg.data === "1" ? true : false)
             // console.log( arr[indx].on)
+          //   if(sw!==null){
+          //   sw.push({
+          //     name:arr[indx].name,
+          //     on:arr[indx].on,
+          //     time:new Date().toISOString()
+          //   })
+          //   Services.setSwitchHistory(sw)
+          // }else{
+          //     Services.setSwitchHistory([{
+          //       name:arr[indx].name,
+          //       on:arr[indx].on,
+          //       time:new Date().toISOString()
+          //     }])
+             
+          //   }
+         
+            setSwitchs(arr)
+          } else if (psdata?.switches[indx]?.topic + "/CONNECTION" === msg?.topic) {
+            let arr = [...psdata.switches]
+
+            arr[indx].connected = (msg.data === "1" ? true : false)
+            // console.log( arr[indx].on)
             setSwitchs(arr)
           }
+
         })
 
-        // psdata.devices.filter((state, indx) => {
-        //   // console.log(msg.data)
-        //   if (psdata.devices[indx]?.topic === msg?.topic) {
-        //     // console.log("heer")
-        //     let arr = [...psdata.devices]
+        psdata.devices.filter((state, indx) => {
+          // console.log(msg.data)
+          if (psdata.devices[indx]?.topic + "/CONNECTION" === msg?.topic) {
+            // console.log("heer")
+            let arr = [...psdata.devices]
 
-        //     arr[indx].on = msg?.data === "1" ? true : false
-        //     // arr[indx].value=msg.data==="1"?true:false
-        //     // console.log( arr[indx].on)
-        //     setDevices(arr)
-        //   }
-        // })
+            arr[indx].connected = msg?.data === "1" ? true : false
+            // arr[indx].value=msg.data==="1"?true:false
+            // console.log( arr[indx].on)
+          //   dev.push({
+          //     name:arr[indx].name,
+          //     on:arr[indx].on,
+          //     time:new Date().toISOString()
+          //   })
+          // Services.setDevicesHistory(dev)
+
+
+          // if(dev!==null){
+          //   dev.push({
+          //     name:arr[indx].name,
+          //     on:arr[indx].on,
+          //     time:new Date().toISOString()
+          //   })
+          //   Services.setSensorHistory(dev)
+          // }
+          //   else{
+          //     Services.setDevicesHistory([{
+          //       name:arr[indx].name,
+          //       on:arr[indx].on,
+          //       time:new Date().toISOString()
+          //     }])
+             
+          //   }
+           
+            setDevices(arr)
+          }
+        })
 
         psdata?.sensors?.filter((state, indx) => {
           // console.log(msg.data)
@@ -115,6 +176,38 @@ const RoomDeatils = ({ navigation, route }) => {
             let arr = [...psdata.sensors]
 
             arr[indx].value = msg?.data
+            // arr[indx].value=msg.data==="1"?true:false
+            // console.log( arr[indx].on)
+            // sen.push({
+            //   name:arr[indx].name,
+            //   on:arr[indx].on,
+            //   time:new Date().toISOString()
+            // })
+        
+            // Services.setSensorHistory(sen)
+
+            // if(sen!==null){
+            //   dev.push({
+            //     name:arr[indx].name,
+            //     on:arr[indx].on,
+            //     value:arr[indx].value,
+            //     time:new Date().toISOString()
+            //   })
+            //   Services.setSensorHistory(sen)
+            // }
+            //   else{
+            //     Services.setSensorHistory([{
+            //       name:arr[indx].name,
+            //       on:arr[indx].on,
+            //       time:new Date().toISOString()
+            //     }])
+               
+            //   }
+            setSensors(arr)
+          } else if (psdata?.sensors[indx]?.topic + "/CONNECTION" === msg?.topic) {
+            let arr = [...psdata.sensors]
+
+            arr[indx].connected = msg?.data
             // arr[indx].value=msg.data==="1"?true:false
             // console.log( arr[indx].on)
             setSensors(arr)
@@ -130,8 +223,11 @@ const RoomDeatils = ({ navigation, route }) => {
 
 
   }, [navigation])
-
-
+  
+ 
+  
+  
+  
 
   renderSwitches = () => {
     return (
@@ -161,10 +257,13 @@ const RoomDeatils = ({ navigation, route }) => {
           }}>
           {switchs?.map((item, index) => (
             <TouchableOpacity
+
               onPress={() => {
                 navigation.navigate("EditSwitch", {
                   psdata: item,
                   type: item.type
+                  // "rgb"
+
                 })
               }}
               style={{
@@ -193,12 +292,14 @@ const RoomDeatils = ({ navigation, route }) => {
                   {item?.on ? 'on' : 'off'}
                 </Text>
                 <SwitchToggle
+
                   switchOn={item?.on}
                   onPress={() => {
-                    console.log(index)
+                    // console.log(index)
                     const arr = [...switchs]
 
                     arr[index].on = !item.on
+                    // console.log(arr[index].on)
                     setSwitchs(arr)
                     client.publish(arr[index].topic, arr[index].on === true ? "1" : "0", 2, true)
                   }}
@@ -230,12 +331,12 @@ const RoomDeatils = ({ navigation, route }) => {
                   alignSelf: 'center',
                   marginTop: 20,
                 }}>
-                <MaterialCommunityIcons
+                  <MaterialCommunityIcons
                   name={"lamp"}
                   style={{
                     fontSize: RFValue(16),
                     alignSelf: "center",
-                    color: item?.on ? COLORS.primary : COLORS.black
+                    color:item?.connected == false ?COLORS.red:COLORS.green
                   }}
 
                 />
@@ -292,7 +393,7 @@ const RoomDeatils = ({ navigation, route }) => {
             paddingHorizontal: SIZES.base
           }}>
           {sensors?.map((item, index) => (
-            item.type == "Slider" ?
+            item.type == "slider" ?
               <TouchableOpacity
                 onPress={() => {
                   // setAddSensorDefaultVal(item.value)
@@ -302,7 +403,7 @@ const RoomDeatils = ({ navigation, route }) => {
                   // setShowEditSensorModal(true)
                   navigation.navigate("EditSensor", {
                     psdata: item,
-                    type: "Slider"
+                    type: "slider"
                   })
 
                 }} style={{
@@ -317,7 +418,7 @@ const RoomDeatils = ({ navigation, route }) => {
                   <Text style={{
                     ...FONTS.body4,
                     marginBottom: SIZES.base,
-                    color: COLORS.black,
+                    color: item?.connected == false ?COLORS.red:COLORS.green,
                     fontWeight: "700"
 
                   }}>{item.name}</Text>
@@ -333,11 +434,12 @@ const RoomDeatils = ({ navigation, route }) => {
 
 
                 </View>
-                <Slider
-                  value={1}
-                  step={1}
-                  minimumValue={0}
-                  maximumValue={100}
+               <Slider
+                  value={item.value*1}
+                  step={0}
+                  minimumValue={item.min_value}
+                  maximumValue={item.max_value}
+                  // inputRange={[max_value, min_value]}
                   onValueChange={(value) => client.publish(item.topic, value + '', 2, true)}
 
                 />
@@ -378,6 +480,7 @@ const RoomDeatils = ({ navigation, route }) => {
                     textAlign: "center"
 
                   }}>{item.name}</Text>
+
                   <Image
                     source={icons.pc}
                     style={{
@@ -388,8 +491,9 @@ const RoomDeatils = ({ navigation, route }) => {
 
 
                     }}
-                    tintColor={COLORS.primary}
+                    tintColor={item?.connected == false ?COLORS.red:COLORS.green}
                   />
+
 
 
                   <View style={{
@@ -471,7 +575,7 @@ const RoomDeatils = ({ navigation, route }) => {
                     style={{
                       fontSize: RFValue(16),
                       alignSelf: "center",
-                      color: item?.on ? COLORS.primary : COLORS.black
+                      color:item?.connected == false ?COLORS.red:COLORS.green
                     }}
 
                   /> :
@@ -485,7 +589,7 @@ const RoomDeatils = ({ navigation, route }) => {
 
 
                     }}
-                    tintColor={COLORS.primary}
+                    tintColor={item?.connected == false ?COLORS.red:COLORS.green}
                   />
                 }
                 <Text
@@ -559,6 +663,7 @@ const RoomDeatils = ({ navigation, route }) => {
             >
               <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
             </TouchableOpacity>
+            {(userData.user_id == 3) &&
             <TouchableOpacity
 
               onPress={() => {
@@ -571,6 +676,7 @@ const RoomDeatils = ({ navigation, route }) => {
               }}>
               <Image source={icons.add} style={{ width: 55, height: 55 }} resizeMode='contain' />
             </TouchableOpacity>
+}
 
           </View>
 
@@ -642,7 +748,7 @@ const RoomDeatils = ({ navigation, route }) => {
                 Devices
               </Text>
             </View>
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Text
                 style={{
                   ...FONTS.body4,
@@ -653,7 +759,7 @@ const RoomDeatils = ({ navigation, route }) => {
                 Turn on all
               </Text>
 
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
           </View>
 
@@ -705,13 +811,13 @@ const RoomDeatils = ({ navigation, route }) => {
                     item.type == "tv" ?
                       navigation.navigate("TvRemote", {
                         type: "tv",
-                        item:item,
-                        client:client
+                        item: item,
+                        client: client
                       })
                       : navigation.navigate("AcRemote", {
                         type: "ac",
-                        item:item,
-                        client:client
+                        item: item,
+                        client: client
                       })
                   }}
                   style={{

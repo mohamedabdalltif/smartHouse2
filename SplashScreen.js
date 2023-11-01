@@ -17,9 +17,9 @@ const SplashScreen = () => {
         flex: 1,
         // alignItems: 'center',
         // justifyContent: 'center',
-        backgroundColor: COLORS.primary,
+        backgroundColor: COLORS.white,
       }}>
-      <StatusBar backgroundColor={COLORS.primary} />
+      <StatusBar backgroundColor={COLORS.white} />
 
       <View
         style={{
@@ -31,7 +31,7 @@ const SplashScreen = () => {
           ref={iconRef}
           delay={200}
           animation={'flipInY'}
-          source={images.splashLogo}
+          source={images.splash}
           style={{
             width: RFValue(250),
             height: RFValue(200),
@@ -41,11 +41,11 @@ const SplashScreen = () => {
           resizeMode="contain"
         />
       </View>
-      <ImageBackground 
+      {/* <ImageBackground 
       style={{alignSelf:"flex-end",width:"100%",height:RFValue(350)}}
       source={images.backGroundSplash}
       resizeMode='contain'
-      />
+      /> */}
     </View>
   );
 };

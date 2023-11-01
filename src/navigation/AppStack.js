@@ -3,7 +3,10 @@ import {TransitionPresets} from '@react-navigation/stack';
 import BottomTab from './BottomTab';
 
 import {createStackNavigator} from '@react-navigation/stack';
-import { AcRemote, AddDevices, AddDevicesType, AddSensors, AddSwitches, EditDevice, EditSensor, EditSwitch, Noti, Profile, RoomDeatils, Settings, TvRemote } from '../screens/appScreens';
+import { AcRemote, AddDevices, AddDevicesType, AddSensors, AddSwitches, CreateUser, EditDevice, EditSensor, EditSwitch, Events, Noti, Profile, RoomDeatils, Settings, SubDevices, SubUser, TvRemote } from '../screens/appScreens';
+import EditUser from '../screens/appScreens/EditUser';
+import EditUserRoom from '../screens/appScreens/EditUser/EditUserRoom';
+import EditRoomDevices from '../screens/appScreens/EditUser/EditRoomDevices';
 
  
 // import RoomDeatils from '../screens/appScreens/RoomDeatils/RoomDeatils';
@@ -39,6 +42,13 @@ const AppStack = () => {
       <Stack.Screen name="EditDevice" component={EditDevice} />
       <Stack.Screen name="TvRemote" component={TvRemote} />
       <Stack.Screen name="AcRemote" component={AcRemote} />
+      <Stack.Screen name="CreateUser" component={CreateUser} />
+      <Stack.Screen name="EditUser" component={EditUser} />
+      <Stack.Screen name="EditUserRoom" component={EditUserRoom} />
+      <Stack.Screen name="EditRoomDevices" component={EditRoomDevices} />
+      <Stack.Screen name="SubUser" component={SubUser} />
+      <Stack.Screen name="SubDevices" component={SubDevices} />
+      <Stack.Screen name="Events" component={Events} />
 
 
 

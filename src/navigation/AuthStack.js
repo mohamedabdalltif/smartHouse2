@@ -6,6 +6,7 @@ import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {  Faq, ForgetPassword, Login, SeconedStepVerify, RegisterSuccess, Signup, SetupHome, Country, SignInHome} 
 from '../screens/authScreens';
 import NewPassword from '../screens/authScreens/NewPassword';
+import { AdminContinueSign } from '../screens/appScreens';
 
 
 
@@ -30,6 +31,7 @@ const AuthStack = () => {
       initialRouteName="SignInHome"
       >
       <Stack.Screen name="SignInHome" component={SignInHome} />
+      <Stack.Screen name="AdminContinueSign" component={AdminContinueSign} />
 
        {/* <Stack.Screen name="Login" component={Login} />
       

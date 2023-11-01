@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -17,24 +17,30 @@ import {removeUser} from '../../../redux/reducers/UserReducer';
 import {RFValue} from 'react-native-responsive-fontsize';
 import FastImage from 'react-native-fast-image';
 import {Button} from 'react-native-paper';
+import Services from '../../../Services';
 
 const Notfication = ({navigation}) => {
   const [data, setdata] = React.useState([
-    {
-      data: 'sensor 1 is not workink',
-      seen : false
-    },
-    {
-      data: 'sensor 2 droopd',
-      seen : true
+    // {
+    //   data: 'sensor 1 is not workink',
+    //   seen : false
+    // },
+    // {
+    //   data: 'sensor 2 droopd',
+    //   seen : true
 
-    },
-    {
-        data: 'sensor 3 not workink',
-      seen : true
+    // },
+    // {
+    //     data: 'sensor 3 not workink',
+    //   seen : true
 
-      },
+    //   },
   ]);
+
+  useEffect(async()=>{
+    let sw=await Services.getSwitchHistory()
+    console.log(sw)
+  },[])
 
   return (
     <View
@@ -53,7 +59,9 @@ const Notfication = ({navigation}) => {
       </TouchableOpacity>
 
       <ScrollView>
-        {data.map(item => (
+
+        {data.length>0?
+        data.map(item => (
           <View
             style={{
               // height: 100,
@@ -80,12 +88,26 @@ const Notfication = ({navigation}) => {
               </Text>
             </View>
           </View>
-        ))}
+        )):
+        <>
+        <View style={{
+          flex:1,
+          alignItems:"center",
+          justifyContent:"center"
+        }}>
+          <Text
+          style={{...FONTS.body3,
+          color:COLORS.black}}
+          >
+            There Is No Notfication
+          </Text>
+        </View>
+        </>}
       </ScrollView>
     </View>
-  );
-};
+  )
 
+              }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
