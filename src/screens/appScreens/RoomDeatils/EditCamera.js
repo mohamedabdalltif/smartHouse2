@@ -35,65 +35,39 @@ import SwitchToggle from 'react-native-switch-toggle';
 import moment from 'moment';
 import { FormInput } from '../../../components';
 import utils from '../../../utils';
-import axios from 'axios';
+
 
 
 import { useDispatch, useSelector } from 'react-redux';
 import AnimatedLottieView from 'lottie-react-native';
+import axios from 'axios';
 
-const EditDevice = ({ navigation, route }) => {
+const EditCamera = ({ navigation, route }) => {
     const { userData } = useSelector(state => state.UserReducer);
     const { psdata, type } = route.params;
-    const [name, setName] = useState(type=="custom"?psdata.remote_name:psdata.name);
-    const [topic, setTopic] = useState(type=="custom"?psdata.remote_topic:psdata.topic);
+    const [name, setName] = useState(psdata.title);
+    const [topic, setTopic] = useState(psdata.link);
     const [loading, setLoading] = useState(false);
     const [delLoading, setDelLoading] = useState(false);
 
-    const editDevice = () => {
+
+
+
+    const editCamera = () => {
         setLoading(true)
         // console.log(psdata)
-        // Alert.alert(type)
+
         const data_send = {
-            device_id: psdata.device_id,
-            name: name,
-            topic: topic
-            
+            camera_id: psdata.camera_id,
+            title: name,
+            link: topic
         }
         // console.log(data_send)
 
-        axios.post("https://camp-coding.tech/smart_home/devices/update_device.php", data_send).then((res) => {
+        axios.post("https://camp-coding.tech/smart_home/camera/edit_camera.php", data_send).then((res) => {
             console.log(res.data)
             if (res.data.status == "success") {
-                utils.toastAlert("success", "Device edited successfully")
-                navigation.navigate("Home")
-                setLoading(false)
-            } else {
-                utils.toastAlert("error", "Error happen please try again later")
-                setLoading(false)
-            }
-
-        })
-
-    }
-    const editCustomDevice = () => {
-        
-        setLoading(true)
-        // console.log(psdata)
-
-        const data_send = {
-            remote_id:psdata.remote_id,
-            remote_name: name,
-            remote_topic: topic,
-            remote_buttons:psdata.remote_buttons
-           
-            
-        }
-        // Alert.alert(JSON.stringify(data_send))
-
-        axios.post("https://camp-coding.tech/smart_home/remote/edit_remote.php", data_send).then((res) => {
-            console.log(res.data)
-            if (res.data.status == "success") {
-                utils.toastAlert("success", "Device edited successfully")
+                utils.toastAlert("success", "Camera edited successfully")
                 navigation.navigate("Home")
                 setLoading(false)
             } else {
@@ -105,15 +79,13 @@ const EditDevice = ({ navigation, route }) => {
 
     }
 
-
-    const deleteDevice = () => {
+    const deleteCamera = () => {
         setDelLoading(true)
-        axios.post("https://camp-coding.tech/smart_home/devices/delete_device.php", {
-            device_id: psdata.device_id
+        axios.post("https://camp-coding.tech/smart_home/camera/delete_camera.php", {
+            camera_id: psdata.camera_id
         }).then((res) => {
-            console.log(res.data)
             if (res.data.status == "success") {
-                utils.toastAlert("success", "Device deleted successfully")
+                utils.toastAlert("success", "Camera deleted successfully")
                 navigation.navigate("Home")
                 setDelLoading(false)
             } else {
@@ -122,24 +94,6 @@ const EditDevice = ({ navigation, route }) => {
             }
         })
     }
-
-    const deleteCustomDevice = () => {
-        setDelLoading(true)
-        axios.post("https://camp-coding.tech/smart_home/remote/delete_remote.php", {
-            remote_id: psdata.remote_id
-        }).then((res) => {
-            console.log(res.data)
-            if (res.data.status == "success") {
-                utils.toastAlert("success", "Device deleted successfully")
-                navigation.navigate("Home")
-                setDelLoading(false)
-            } else {
-                utils.toastAlert("error", "Error happen please try again later")
-                setDelLoading(false)
-            }
-        })
-    }
-
 
 
     return (
@@ -184,9 +138,9 @@ const EditDevice = ({ navigation, route }) => {
                     >
                         <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
                     </TouchableOpacity>
-                    {(userData.user_id == 3) && <TouchableOpacity
+                    {userData.user_id == 3 && <TouchableOpacity
                         onPress={() => {
-                            type!=="custom"?deleteDevice():deleteCustomDevice()
+                            deleteCamera()
                         }}
                         style={{
                             width: RFValue(50),
@@ -206,25 +160,16 @@ const EditDevice = ({ navigation, route }) => {
 
 
                     </TouchableOpacity>
-
                     }
+                    {/* <View /> */}
+
+
 
                 </View>
 
 
             </ImageBackground>
-            {/* <Image
-        style={{
-          width: "100%",
-          height: 250,
-          // alignSelf: 'center',
-          // marginBottom: 30,
-        }}
-        source={{
-          uri: 'https://bondhome.io/wp-content/uploads/2020/08/Post_30_Blog_03_BOND.png',
-        }}
-        resizeMode='cover'
-      /> */}
+
             <ScrollView contentContainerStyle={{
                 padding: SIZES.margin,
                 // backgroundColor: COLORS.white,
@@ -237,7 +182,7 @@ const EditDevice = ({ navigation, route }) => {
                         color: COLORS.primary,
                         textAlign: "center"
                     }}>
-                    Edit Device
+                    Edit Camera
                 </Text>
 
                 <TextInput
@@ -252,14 +197,14 @@ const EditDevice = ({ navigation, route }) => {
                         borderColor: '#B6B6B6',
                         padding: RFValue(12),
                     }}
-                    placeholder="Enter your Device name"
+                    placeholder="Enter your Camera name"
                     value={name}
                     onChangeText={value => {
                         setName(value)
                     }}
                 />
 
-                {(userData.user_id == 3) && <TextInput
+                {userData.user_id == 3 && <TextInput
                     style={{
                         width: '90%',
                         // height: 50,
@@ -271,7 +216,7 @@ const EditDevice = ({ navigation, route }) => {
                         borderColor: '#B6B6B6',
                         padding: RFValue(12),
                     }}
-                    placeholder="Enter your Device Topic"
+                    placeholder="Enter your Camera Link"
                     value={topic}
                     onChangeText={value => {
                         setTopic(value)
@@ -279,9 +224,11 @@ const EditDevice = ({ navigation, route }) => {
                 />
                 }
 
+
+
                 <TouchableOpacity
                     onPress={() => {
-                      type!=="custom"?  editDevice():editCustomDevice()
+                        editCamera()
                     }}
                     style={{
                         width: 250,
@@ -305,7 +252,7 @@ const EditDevice = ({ navigation, route }) => {
                                     color: COLORS.white,
                                     fontWeight: "bold"
                                 }}>
-                                Edit Device
+                                Edit Camera
                             </Text>
                     }
                 </TouchableOpacity>
@@ -353,4 +300,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditDevice;
+export default EditCamera;

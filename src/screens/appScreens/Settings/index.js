@@ -109,7 +109,7 @@ const Settings = ({ navigation }) => {
 
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             navigation.navigate('Noti')
             
@@ -160,11 +160,11 @@ const Settings = ({ navigation }) => {
           </View>
 
 
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           onPress={() => {
-            // navigation.navigate('Events')
-            Alert.alert("i4technology","coming soon")
+            navigation.navigate('Events')
+            // Alert.alert("i4technology","coming soon")
           }}
           style={{
             height: RFValue(70),

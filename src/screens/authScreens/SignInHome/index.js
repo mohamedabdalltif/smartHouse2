@@ -58,34 +58,36 @@ const SignInHome = ({ navigation, route }) => {
   const [show_modal, setshow_modal] = React.useState(false)
 
 
-  const signIn = () => {
+  const signIn = async () => {
     setLoading(true)
     if (Email === '' || Password === '') {
       utils.toastAlert("error", "Please check values")
       setLoading(false)
       return;
     }
-
+    let token = await Auth.FcmToken();
+    console.log(token)
 
     axios.post("https://camp-coding.tech/smart_home/auth/user_login.php", {
-      email: Email,
+      email: Email.trim(),
       password: Password,
+      // token:token
     }).then((res) => {
       console.log(res.data)
       if (res.data.status === "success") {
 
-        if (res.data.massage.user_id == 3){
-          navigation.navigate("AdminContinueSign",{
-            psData:res.data.massage
+        if (res.data.massage.user_id == 3) {
+          navigation.navigate("AdminContinueSign", {
+            psData: res.data.massage
           })
           setLoading(false)
-        }else{
+        } else {
           dispatch(setUser(res.data.massage))
           storedata((res.data.massage))
           utils.toastAlert("success", "Login Done Successfully")
           setLoading(false)
         }
-         
+
 
       } else {
         utils.toastAlert("error", "error happen try again later")

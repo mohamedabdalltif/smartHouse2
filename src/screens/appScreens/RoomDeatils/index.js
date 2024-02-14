@@ -3,76 +3,66 @@ import {
   View,
   Text,
   StyleSheet,
-  Platform,
+
   TouchableOpacity,
-  FlatList,
+
   ImageBackground,
-  UIManager,
-  LayoutAnimation,
+
   Modal,
-  ActivityIndicator,
+
   StatusBar,
   Image,
-  Linking,
-  Alert,
-  TextInput,
-  Button,
+
   SafeAreaView,
-  PermissionsAndroid
+  Alert,
+
 } from 'react-native';
 import Slider from 'react-native-slider'
 import { RFValue } from 'react-native-responsive-fontsize';
-import FastImage from 'react-native-fast-image';
 
-import LottieView from 'lottie-react-native';
-import notifee from '@notifee/react-native';
+
+
 
 import { COLORS, FONTS, icons, images, lotties, SIZES } from '../../../constants';
-// import DatePicker from 'react-native-date-picker';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import moment, { min } from 'moment';
-import { FormInput } from '../../../components';
-import utils from '../../../utils';
-import { useIsFocused } from '@react-navigation/native';
-import { color } from 'react-native-reanimated';
+
 import { ScrollView } from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ImageCropPicker from 'react-native-image-crop-picker';
+
 
 
 import { useDispatch, useSelector } from 'react-redux';
-import AnimatedLottieView from 'lottie-react-native';
+
 
 import SwitchToggle from 'react-native-switch-toggle';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
 
-  setAppData,
+
   setdeviceAdded
 
 } from '../../../redux/reducers/AppReducer';
-import Services from '../../../Services';
+
+import axios from 'axios';
 
 const RoomDeatils = ({ navigation, route }) => {
 
   const { userData } = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
-  // const {appLoading,appData,client,sensorConnection} = useSelector(state => state.AppReducer);
+
   const { psdata, client } = route.params;
   const [switchs, setSwitchs] = useState([])
   const [devices, setDevices] = useState([])
+  const [customRemote, setCustomRemote] = useState([])
+  const [Cameras, setCameras] = useState([])
   const [sensors, setSensors] = useState([])
   const [deviceTypeModal, setDeviceTypeModal] = useState(null);
+  const [selectedCam, setSelectedCam] = useState(null);
   const [min_value, setMin_value] = useState(0);
   const [max_value, setMax_value] = useState(1);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async() => {
-      // let sw=await Services.getSwitchHistory()
-      // let sen=await Services.getSensorHistory()
-      // let dev=await Services.getDevicesHistory()
-    //  console.log(sw)
+    const unsubscribe = navigation.addListener('focus', async () => {
+
       setSwitchs(psdata.switches)
       setSensors(psdata.sensors)
       setDevices(psdata.devices)
@@ -84,150 +74,116 @@ const RoomDeatils = ({ navigation, route }) => {
       for (let x = 0; x < psdata?.sensors.length; x++) {
         client?.subscribe(psdata.sensors[x].topic, 2)
         client?.subscribe(psdata.sensors[x].topic + "/CONNECTION", 2)
-        // console.log(psdata.sensors[x].topic)
+
       }
       for (let k = 0; k < psdata?.devices.length; k++) {
         client?.subscribe(psdata.devices[k].topic, 2)
         client?.subscribe(psdata.devices[k].topic + "/CONNECTION", 2)
-        // console.log(psdata.devices[k].topic)
+
       }
 
       client.on('message', function (msg) {
         console.log('mqtt.event.message', msg);
-        
+
         psdata?.switches?.filter((state, indx) => {
-          // console.log(msg.data)
+
           if (psdata?.switches[indx]?.topic === msg?.topic) {
-            // console.log(msg.data==="0")
-            // console.log("here")
+
             let arr = [...psdata.switches]
 
             arr[indx].on = (msg.data === "1" ? true : false)
-            // console.log( arr[indx].on)
-          //   if(sw!==null){
-          //   sw.push({
-          //     name:arr[indx].name,
-          //     on:arr[indx].on,
-          //     time:new Date().toISOString()
-          //   })
-          //   Services.setSwitchHistory(sw)
-          // }else{
-          //     Services.setSwitchHistory([{
-          //       name:arr[indx].name,
-          //       on:arr[indx].on,
-          //       time:new Date().toISOString()
-          //     }])
-             
-          //   }
-         
+
+
             setSwitchs(arr)
           } else if (psdata?.switches[indx]?.topic + "/CONNECTION" === msg?.topic) {
             let arr = [...psdata.switches]
 
             arr[indx].connected = (msg.data === "1" ? true : false)
-            // console.log( arr[indx].on)
+
             setSwitchs(arr)
           }
 
         })
 
         psdata.devices.filter((state, indx) => {
-          // console.log(msg.data)
+
           if (psdata.devices[indx]?.topic + "/CONNECTION" === msg?.topic) {
-            // console.log("heer")
+
             let arr = [...psdata.devices]
 
             arr[indx].connected = msg?.data === "1" ? true : false
-            // arr[indx].value=msg.data==="1"?true:false
-            // console.log( arr[indx].on)
-          //   dev.push({
-          //     name:arr[indx].name,
-          //     on:arr[indx].on,
-          //     time:new Date().toISOString()
-          //   })
-          // Services.setDevicesHistory(dev)
 
 
-          // if(dev!==null){
-          //   dev.push({
-          //     name:arr[indx].name,
-          //     on:arr[indx].on,
-          //     time:new Date().toISOString()
-          //   })
-          //   Services.setSensorHistory(dev)
-          // }
-          //   else{
-          //     Services.setDevicesHistory([{
-          //       name:arr[indx].name,
-          //       on:arr[indx].on,
-          //       time:new Date().toISOString()
-          //     }])
-             
-          //   }
-           
             setDevices(arr)
           }
         })
 
         psdata?.sensors?.filter((state, indx) => {
-          // console.log(msg.data)
+
           if (psdata?.sensors[indx]?.topic === msg?.topic) {
-            // console.log("heer")
+            // console.log(msg?.data)
+
             let arr = [...psdata.sensors]
 
             arr[indx].value = msg?.data
-            // arr[indx].value=msg.data==="1"?true:false
-            // console.log( arr[indx].on)
-            // sen.push({
-            //   name:arr[indx].name,
-            //   on:arr[indx].on,
-            //   time:new Date().toISOString()
-            // })
-        
-            // Services.setSensorHistory(sen)
 
-            // if(sen!==null){
-            //   dev.push({
-            //     name:arr[indx].name,
-            //     on:arr[indx].on,
-            //     value:arr[indx].value,
-            //     time:new Date().toISOString()
-            //   })
-            //   Services.setSensorHistory(sen)
-            // }
-            //   else{
-            //     Services.setSensorHistory([{
-            //       name:arr[indx].name,
-            //       on:arr[indx].on,
-            //       time:new Date().toISOString()
-            //     }])
-               
-            //   }
             setSensors(arr)
           } else if (psdata?.sensors[indx]?.topic + "/CONNECTION" === msg?.topic) {
             let arr = [...psdata.sensors]
 
             arr[indx].connected = msg?.data
-            // arr[indx].value=msg.data==="1"?true:false
-            // console.log( arr[indx].on)
+
             setSensors(arr)
           }
         })
-        // setLoading(false)
+
       })
-      // setLoading(false)
+
     });
+    getCustomRemote()
+    getCamera()
 
     return unsubscribe;
 
 
 
   }, [navigation])
-  
- 
-  
-  
-  
+
+
+  const getCustomRemote = () => {
+    let data_send = {
+      "room_id": psdata?.room_id,
+
+    }
+
+    axios.post("https://camp-coding.tech/smart_home/remote/select_remote.php", data_send).then((res) => {
+      console.log(res.data)
+      if (res.data.status == "success") {
+        setCustomRemote(res.data.message)
+
+      }
+
+
+    })
+  }
+  const getCamera = () => {
+    let data_send = {
+      "room_id": psdata?.room_id,
+
+    }
+
+    axios.post("https://camp-coding.tech/smart_home/camera/select_camera.php", data_send).then((res) => {
+      console.log(res.data)
+      if (res.data.status == "success") {
+        setCameras(res.data.message)
+
+      }
+
+
+    })
+  }
+
+
 
   renderSwitches = () => {
     return (
@@ -257,11 +213,20 @@ const RoomDeatils = ({ navigation, route }) => {
           }}>
           {switchs?.map((item, index) => (
             <TouchableOpacity
-
-              onPress={() => {
-                navigation.navigate("EditSwitch", {
+              onLongPress={() => {
+                navigation.navigate("DeviceHistory", {
                   psdata: item,
                   type: item.type
+
+
+                })
+              }}
+              onPress={() => {
+                // Alert.alert(item.type)
+                navigation.navigate("EditSwitch", {
+                  psdata: item,
+                  type: item.type,
+                  client: client
                   // "rgb"
 
                 })
@@ -331,12 +296,12 @@ const RoomDeatils = ({ navigation, route }) => {
                   alignSelf: 'center',
                   marginTop: 20,
                 }}>
-                  <MaterialCommunityIcons
+                <MaterialCommunityIcons
                   name={"lamp"}
                   style={{
                     fontSize: RFValue(16),
                     alignSelf: "center",
-                    color:item?.connected == false ?COLORS.red:COLORS.green
+                    color: item?.connected == false ? COLORS.red : COLORS.green
                   }}
 
                 />
@@ -395,6 +360,14 @@ const RoomDeatils = ({ navigation, route }) => {
           {sensors?.map((item, index) => (
             item.type == "slider" ?
               <TouchableOpacity
+                onLongPress={() => {
+                  navigation.navigate("DeviceHistory", {
+                    psdata: item,
+                    type: item.type
+                    // "rgb"
+
+                  })
+                }}
                 onPress={() => {
                   // setAddSensorDefaultVal(item.value)
                   // setAddSensorMeasurement(item.measurement)
@@ -418,7 +391,7 @@ const RoomDeatils = ({ navigation, route }) => {
                   <Text style={{
                     ...FONTS.body4,
                     marginBottom: SIZES.base,
-                    color: item?.connected == false ?COLORS.red:COLORS.green,
+                    color: item?.connected == false ? COLORS.red : COLORS.green,
                     fontWeight: "700"
 
                   }}>{item.name}</Text>
@@ -434,8 +407,8 @@ const RoomDeatils = ({ navigation, route }) => {
 
 
                 </View>
-               <Slider
-                  value={item.value*1}
+                <Slider
+                  value={item.value * 1}
                   step={0}
                   minimumValue={item.min_value}
                   maximumValue={item.max_value}
@@ -447,6 +420,14 @@ const RoomDeatils = ({ navigation, route }) => {
               </TouchableOpacity>
               :
               <TouchableOpacity
+                onLongPress={() => {
+                  navigation.navigate("DeviceHistory", {
+                    psdata: item,
+                    type: item.type
+                    // "rgb"
+
+                  })
+                }}
                 onPress={() => {
                   // setAddSensorDefaultVal(item.value)
                   // setAddSensorMeasurement(item.measurement)
@@ -491,7 +472,7 @@ const RoomDeatils = ({ navigation, route }) => {
 
 
                     }}
-                    tintColor={item?.connected == false ?COLORS.red:COLORS.green}
+                    tintColor={item?.connected == false ? COLORS.red : COLORS.green}
                   />
 
 
@@ -552,6 +533,14 @@ const RoomDeatils = ({ navigation, route }) => {
           }}>
           {devices?.map((item, index) => (
             <TouchableOpacity
+              onLongPress={() => {
+                navigation.navigate("DeviceHistory", {
+                  psdata: item,
+                  type: item.type
+                  // "rgb"
+
+                })
+              }}
               onPress={() => {
                 setDeviceTypeModal(item)
 
@@ -575,7 +564,7 @@ const RoomDeatils = ({ navigation, route }) => {
                     style={{
                       fontSize: RFValue(16),
                       alignSelf: "center",
-                      color:item?.connected == false ?COLORS.red:COLORS.green
+                      color: item?.connected == false ? COLORS.red : COLORS.green
                     }}
 
                   /> :
@@ -589,7 +578,7 @@ const RoomDeatils = ({ navigation, route }) => {
 
 
                     }}
-                    tintColor={item?.connected == false ?COLORS.red:COLORS.green}
+                    tintColor={item?.connected == false ? COLORS.red : COLORS.green}
                   />
                 }
                 <Text
@@ -615,6 +604,146 @@ const RoomDeatils = ({ navigation, route }) => {
               </View>
             </TouchableOpacity>
           ))}
+          {customRemote?.map((item, index) => (
+            <TouchableOpacity
+              onLongPress={() => {
+                navigation.navigate("DeviceHistory", {
+                  psdata: item,
+                  type: item.type
+                  // "rgb"
+
+                })
+              }}
+              onPress={() => {
+                let data = item
+                data['type'] = "custom"
+
+                setDeviceTypeModal(data)
+
+              }}
+              style={{
+                width: '47%',
+                backgroundColor: '#fff',
+                borderRadius: RFValue(20),
+                marginBottom: SIZES.base,
+              }}>
+
+              <View
+                style={{
+                  alignSelf: 'center',
+                  marginTop: 20,
+                }}>
+
+                <Image
+                  source={icons.pc}
+                  style={{
+                    width: RFValue(16),
+                    height: RFValue(16),
+                    alignSelf: "center",
+                    marginBottom: SIZES.base
+
+
+                  }}
+                  tintColor={COLORS.green}
+                />
+
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    //fontFamily: FONTS.//fontFamily,
+                    fontSize: 17,
+                    marginVertical: 5,
+                    textAlign: 'center',
+                    color: COLORS.black
+                  }}>
+                  {item.remote_name}
+                </Text>
+
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+
+      </>
+    )
+  }
+  renderCamera = () => {
+    return (
+      <>
+
+        {Cameras?.length > 0 && <Text
+          style={{
+            ...FONTS.body3,
+            color: COLORS.primary,
+            marginLeft: RFValue(10),
+            marginVertical: SIZES.base,
+            fontWeight: "bold",
+            textAlign: "center"
+          }}>
+          Cameras
+        </Text>
+        }
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            paddingHorizontal: SIZES.base
+          }}>
+          {Cameras?.map((item, index) => (
+            <TouchableOpacity
+
+              onPress={() => {
+                setSelectedCam(item)
+                setDeviceTypeModal("cam")
+
+              }}
+              style={{
+                width: '47%',
+                backgroundColor: '#fff',
+                borderRadius: RFValue(20),
+                marginBottom: SIZES.base,
+              }}>
+
+              <View
+                style={{
+                  alignSelf: 'center',
+                  marginTop: 20,
+                }}>
+
+
+
+                <Image
+                  source={icons.pc}
+                  style={{
+                    width: RFValue(16),
+                    height: RFValue(16),
+                    alignSelf: "center",
+                    marginBottom: SIZES.base
+
+
+                  }}
+                  tintColor={COLORS.green}
+                />
+
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    //fontFamily: FONTS.//fontFamily,
+                    fontSize: 17,
+                    marginVertical: 5,
+                    textAlign: 'center',
+                    color: COLORS.black
+                  }}>
+                  {item.title}
+                </Text>
+
+              </View>
+            </TouchableOpacity>
+          ))}
+
         </View>
 
 
@@ -664,19 +793,19 @@ const RoomDeatils = ({ navigation, route }) => {
               <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
             </TouchableOpacity>
             {(userData.user_id == 3) &&
-            <TouchableOpacity
+              <TouchableOpacity
 
-              onPress={() => {
-                // setShowAddDevicesModal(true)
-                // setshow_modal(true);
-                dispatch(setdeviceAdded(false))
-                navigation.navigate("AddDevicesType", {
-                  room_id: psdata.room_id
-                })
-              }}>
-              <Image source={icons.add} style={{ width: 55, height: 55 }} resizeMode='contain' />
-            </TouchableOpacity>
-}
+                onPress={() => {
+                  // setShowAddDevicesModal(true)
+                  // setshow_modal(true);
+                  dispatch(setdeviceAdded(false))
+                  navigation.navigate("AddDevicesType", {
+                    room_id: psdata.room_id
+                  })
+                }}>
+                <Image source={icons.add} style={{ width: 55, height: 55 }} resizeMode='contain' />
+              </TouchableOpacity>
+            }
 
           </View>
 
@@ -702,6 +831,7 @@ const RoomDeatils = ({ navigation, route }) => {
               }}>
               {psdata.name}
             </Text>
+
 
           </View>
 
@@ -747,7 +877,9 @@ const RoomDeatils = ({ navigation, route }) => {
                 }}>
                 Devices
               </Text>
+
             </View>
+
             {/* <TouchableOpacity>
               <Text
                 style={{
@@ -761,11 +893,24 @@ const RoomDeatils = ({ navigation, route }) => {
 
             </TouchableOpacity> */}
 
+
           </View>
+          <Text
+            style={{
+              ...FONTS.body4,
+              color: COLORS.primary,
+              textDecorationLine: "underline",
+              textAlign: "center"
+            }}
+          >
+            Long press on device to show history
+          </Text>
+
 
           <ScrollView contentContainerStyle={{ paddingBottom: SIZES.padding * 4, marginTop: SIZES.margin }} showsVerticalScrollIndicator={false}>
             {renderSwitches()}
             {renderDevices()}
+            {renderCamera()}
             {renderSensors()}
 
           </ScrollView>
@@ -795,7 +940,7 @@ const RoomDeatils = ({ navigation, route }) => {
                   marginBottom: SIZES.margin
                 }}
               >
-                {deviceTypeModal == "sw" ? "Switch Type" : "Device Type"}
+                {deviceTypeModal == "sw" ? "Switch Type" : deviceTypeModal == "cam" ? "Camera Type" : "Device Type"}
 
               </Text>
               <View style={{
@@ -814,11 +959,23 @@ const RoomDeatils = ({ navigation, route }) => {
                         item: item,
                         client: client
                       })
-                      : navigation.navigate("AcRemote", {
-                        type: "ac",
-                        item: item,
-                        client: client
-                      })
+                      :
+                      item.type == "custom" ?
+                        navigation.navigate("CustomRemote", {
+
+                          item: item,
+                          client: client
+                        }) :
+                        deviceTypeModal == "cam" ?
+                          navigation.navigate("CameraWebView", {
+                            psdata: selectedCam,
+                          })
+                          :
+                          navigation.navigate("AcRemote", {
+                            type: "ac",
+                            item: item,
+                            client: client
+                          })
                   }}
                   style={{
                     width: "47%",
@@ -833,7 +990,7 @@ const RoomDeatils = ({ navigation, route }) => {
                     color: COLORS.white,
                     textAlign: "center"
                   }}>
-                    {"REMOTE"}
+                    {deviceTypeModal == "cam" ? "CAMERA" : "REMOTE"}
                   </Text>
 
 
@@ -842,10 +999,15 @@ const RoomDeatils = ({ navigation, route }) => {
                   onPress={() => {
                     const item = deviceTypeModal
                     setDeviceTypeModal(null)
-                    navigation.navigate("EditDevice", {
-                      psdata: item,
-                      type: ""
-                    })
+                    deviceTypeModal == "cam" ?
+                      navigation.navigate("EditCamera", {
+                        psdata: selectedCam,
+
+                      }) :
+                      navigation.navigate("EditDevice", {
+                        psdata: item,
+                        type: item.type
+                      })
 
                   }}
                   style={{

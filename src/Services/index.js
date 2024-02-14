@@ -1,8 +1,8 @@
 import React from 'react';
 
-// import messaging from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging';
 
-// const FcmToken = async () => await messaging().getToken();
+const FcmToken = async () => await messaging().getToken();
 
 import utils from '../utils';
 async function getAccount() {
@@ -52,7 +52,7 @@ export default {
   getAccount,
   getFirst,
   setFirst,
-  //   FcmToken,
+  FcmToken,
   setSensorHistory,
   setDevicesHistory,
   setSwitchHistory,

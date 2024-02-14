@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Platform, StatusBar, Modal, Text, AppState } from 'react-native';
+import { View, Platform, StatusBar, Modal, Text, AppState, Appearance, LogBox, Alert } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,9 +21,16 @@ import SplashScreen from './SplashScreen';
 import { MenuProvider } from 'react-native-popup-menu';
 import { RFValue } from 'react-native-responsive-fontsize';
 import AnimatedLottieView from 'lottie-react-native';
-import BackgroundTimer from 'react-native-background-timer';
-import notifee from '@notifee/react-native';
+// import BackgroundTimer from 'react-native-background-timer';
+import messaging from '@react-native-firebase/messaging';
+import notifee, { AndroidImportance } from '@notifee/react-native';
+import axios from 'axios';
+// import notifee from '@notifee/react-native';
 // import BackgroundService from 'react-native-background-actions';
+
+
+LogBox.ignoreLogs(['Warning: ...']);
+LogBox.ignoreAllLogs();
 const Stack = createStackNavigator();
 const ObBoardStack = () => {
   return (
@@ -48,40 +55,71 @@ const App = () => {
   const [loginChk, setloginChk] = useState(true);
   const [isNetworkConnect, setIsNetworkConnect] = useState(true);
   // const appState = useRef(AppState.currentState);
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
   useEffect(async () => {
 
 
 
 
 
+    requestUserPermission();
 
+    notifee.requestPermission();
 
 
     // await BackgroundService.updateNotification({taskDesc: 'momo'}); 
 
     getUser();
+    RefreshServer()
     // setConnection()
     // getData()
     // dispatch(modifyIsFirst(true));
     NetInfo.addEventListener(state => {
       setIsNetworkConnect(!state.isInternetReachable);
-      // if (state.isInternetReachable)
+      // if (state. )
       // utils.toastAlert('success', 'Your internet connection was restored');
 
     });
-   
-     
-    
+    Appearance.setColorScheme('light')
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      DisplayNotification(remoteMessage);
+    });
+    return unsubscribe;
+
 
 
   }, []);
- 
+  async function DisplayNotification(remoteMessage) {
+    // Create a channel
+    const channelId = await notifee.createChannel({
+      id: 'default-inner',
+      name: 'Default Channel inner',
+      importance: AndroidImportance.HIGH,
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: remoteMessage.notification.title,
+      body: remoteMessage.notification.body,
+      android: {
+        channelId,
+      },
+    });
+  }
   const getUser = async () => {
 
     let data = await Auth.getAccount();
     let isFirst = await Auth.getFirst();
-// data=null
-// isFirst="1"
+    // data=null
+    // isFirst="1"
     if (isFirst != '1') {
       dispatch(modifyIsFirst(true));
     }
@@ -100,6 +138,11 @@ const App = () => {
   }
 
 
+  function RefreshServer() {
+    axios.get(`https://mqtt-liart.vercel.app`).then((res) => {
+      // console.log(res)
+    })
+  }
 
 
 

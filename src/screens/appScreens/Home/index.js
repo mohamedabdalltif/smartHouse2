@@ -54,7 +54,7 @@ import Voice, {
   SpeechResultsEvent,
   SpeechErrorEvent,
 } from '@react-native-voice/voice';
-import notifee from '@notifee/react-native';
+// import notifee from '@notifee/react-native';
 import BackgroundService from 'react-native-background-actions';
 import axios from 'axios';
 const CARD_HEIGHT = 220;
@@ -68,6 +68,7 @@ if (
 import { useDispatch, useSelector } from 'react-redux';
 import AnimatedLottieView from 'lottie-react-native';
 import RNFetchBlob from 'rn-fetch-blob';
+import { setUser } from '../../../redux/reducers/UserReducer';
 const options = {
   taskName: 'i4technology',
   taskTitle: 'i4technology',
@@ -119,6 +120,7 @@ const Home = ({ navigation }) => {
   const [delLoading, setDelLoading] = useState(false);
   useEffect(() => {
     // console.log(userData)
+    // dispatch(setUser({userData,user_id:3}))
     if (connection) {
       const interval = setInterval(() => {
         setCounter(counter => counter + 1);
@@ -992,14 +994,15 @@ const Home = ({ navigation }) => {
                 <TouchableOpacity
                   onPress={() => {
                     console.log(client)
-                    if (client !== null) {
-                      console.log(client)
+                    // if (client !== null) {
+                      // console.log(client)
+                      // Alert.alert(JSON.stringify(item))
                       navigation.navigate('RoomDeatils', {
                         psdata: item,
                         client: client,
 
                       });
-                    }
+                    // }
 
                   }}
                   style={{

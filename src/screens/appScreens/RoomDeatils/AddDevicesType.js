@@ -20,7 +20,7 @@ import {
   SafeAreaView,
   PermissionsAndroid,
   ScrollView,
-  BackHandler 
+  BackHandler
 } from 'react-native';
 
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -32,6 +32,7 @@ import LottieView from 'lottie-react-native';
 import { COLORS, FONTS, icons, images, lotties, SIZES } from '../../../constants';
 // import DatePicker from 'react-native-date-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import SwitchToggle from 'react-native-switch-toggle';
 import moment from 'moment';
 import { FormInput } from '../../../components';
@@ -42,32 +43,32 @@ import { setdeviceAdded } from '../../../redux/reducers/AppReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import AnimatedLottieView from 'lottie-react-native';
 
-const AddDevicesType = ({ navigation,route }) => {
-  const dispatch=useDispatch()
+const AddDevicesType = ({ navigation, route }) => {
+  const dispatch = useDispatch()
   // const [devices,setDevices]=useState(JSON.parse(JSON.stringify(devArr)))
-  const { appLoading, appData, client, sensorConnection,deviceAdded } = useSelector(state => state.AppReducer);
+  const { appLoading, appData, client, sensorConnection, deviceAdded } = useSelector(state => state.AppReducer);
   // const[deviceAdded,setDeviceAdded]=useState(false)
 
- const {room_id}=route.params;
+  const { room_id } = route.params;
   const [deviceTypeModal, setDeviceTypeModal] = useState(null);
   function handleBackButtonClick() {
     console.log(deviceAdded)
-    if(!deviceAdded){
+    if (!deviceAdded) {
       navigation.goBack()
-      
-    }else{
-    navigation.navigate("Home");
-    
-  }
+
+    } else {
+      navigation.navigate("Home");
+
+    }
 
     return true;
   }
   useEffect(() => {
-    
+
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-      
+
     };
   }, []);
 
@@ -111,13 +112,13 @@ const AddDevicesType = ({ navigation,route }) => {
         >
           <TouchableOpacity
             onPress={() => {
-              if(!deviceAdded){
+              if (!deviceAdded) {
                 navigation.goBack()
-                
-              }else{
-              navigation.navigate("Home");
-              
-            }
+
+              } else {
+                navigation.navigate("Home");
+
+              }
             }}
           >
             <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
@@ -202,8 +203,8 @@ const AddDevicesType = ({ navigation,route }) => {
 
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('AddSensors',{
-                room_id:room_id
+              navigation.navigate('AddSensors', {
+                room_id: room_id
               });
             }}
             style={{
@@ -269,108 +270,170 @@ const AddDevicesType = ({ navigation,route }) => {
               Device{' '}
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('AddCamera', {
+                room_id: room_id
+              });
+            }}
+            style={{
+              width: "47%",
+              height: RFValue(80),
+              backgroundColor: COLORS.gray3,
+              marginTop: RFValue(10),
+              borderRadius: RFValue(10),
+              alignItems: 'center',
+              justifyContent: 'center',
+              // flexDirection: 'row',
+            }}>
+            <Ionicons
+              name={"videocam"}
+              style={{
+                fontSize: RFValue(16),
+                alignSelf: "center",
+                marginBottom: SIZES.base,
+                color: COLORS.primary
+              }}
+            />
+            <Text
+              style={{
+                ...FONTS.body5,
+                fontWeight: 'bold',
+                color: COLORS.black,
+              }}>
+              Camera{' '}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <Modal transparent visible={deviceTypeModal=="sw"||deviceTypeModal=="dev"}
+        <Modal transparent visible={deviceTypeModal == "sw" || deviceTypeModal == "dev"}
           onRequestClose={() => {
             setDeviceTypeModal(null)
           }}
         >
-          <TouchableOpacity 
-          activeOpacity={0}
-          style={styles.modalBackGround}
-          onPress={()=>{
-            setDeviceTypeModal(null)
-          }}
+          <TouchableOpacity
+            activeOpacity={0}
+            style={styles.modalBackGround}
+            onPress={() => {
+              setDeviceTypeModal(null)
+            }}
           >
             <View
               style={styles.modalContainer}>
-                <Text
+              <Text
                 style={{
                   ...FONTS.body3,
-                  fontWeight:"bold",
-                  textAlign:"center",
-                  color:COLORS.primary,
-                  marginBottom:SIZES.margin
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: COLORS.primary,
+                  marginBottom: SIZES.margin
                 }}
-                >
-                 { deviceTypeModal=="sw"?"Switch Type":"Device Type"}
+              >
+                {deviceTypeModal == "sw" ? "Switch Type" : "Device Type"}
 
-                </Text>
+              </Text>
               <View style={{
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom:SIZES.base
+                marginBottom: SIZES.base
               }}>
                 <TouchableOpacity
-                onPress={()=>{
-                  setDeviceTypeModal(null)
-                  deviceTypeModal=="sw"?
-                  navigation.navigate("AddSwitches",{
-                    type:"",
-                    room_id:room_id,
-                    
-                  })
-                  :
-                  navigation.navigate("AddDevices",{
-                    type:"ac",
-                    room_id:room_id
-                  })
+                  onPress={() => {
+                    setDeviceTypeModal(null)
+                    deviceTypeModal == "sw" ?
+                      navigation.navigate("AddSwitches", {
+                        type: "",
+                        room_id: room_id,
 
-                }}
-                 style={{
-                  width: "47%",
-                  height: RFValue(50),
-                  backgroundColor: COLORS.primary,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: RFValue(10)
-                }}>
+                      })
+                      :
+                      navigation.navigate("AddDevices", {
+                        type: "ac",
+                        room_id: room_id
+                      })
+
+                  }}
+                  style={{
+                    width: "47%",
+                    height: RFValue(50),
+                    backgroundColor: COLORS.primary,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: RFValue(10)
+                  }}>
                   <Text style={{
                     ...FONTS.body3,
                     color: COLORS.white,
                     textAlign: "center"
                   }}>
-                    { deviceTypeModal=="sw"?"ORDINARY":"AC"}
+                    {deviceTypeModal == "sw" ? "ORDINARY" : "AC"}
                   </Text>
 
 
                 </TouchableOpacity>
                 <TouchableOpacity
-                onPress={()=>{
-                  setDeviceTypeModal(null)
-                  deviceTypeModal=="sw"?
-                  navigation.navigate("AddSwitches",{
-                    type:"RGB",
-                    room_id:room_id
-                  })
-                  :
-                  navigation.navigate("AddDevices",{
-                    type:"tv",
-                    room_id:room_id
-                  })
+                  onPress={() => {
+                    setDeviceTypeModal(null)
+                    deviceTypeModal == "sw" ?
+                      navigation.navigate("AddSwitches", {
+                        type: "RGB",
+                        room_id: room_id
+                      })
+                      :
+                      navigation.navigate("AddDevices", {
+                        type: "tv",
+                        room_id: room_id
+                      })
 
-                }}
-                 style={{
-                  width: "47%",
-                  height: RFValue(50),
-                  backgroundColor: COLORS.primary,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: RFValue(10)
-                }}>
+                  }}
+                  style={{
+                    width: "47%",
+                    height: RFValue(50),
+                    backgroundColor: COLORS.primary,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: RFValue(10)
+                  }}>
                   <Text style={{
                     ...FONTS.body3,
                     color: COLORS.white,
                     textAlign: "center"
                   }}>
-                   { deviceTypeModal=="sw"?"RGB":"TV"} 
+                    {deviceTypeModal == "sw" ? "RGB" : "TV"}
                   </Text>
 
                 </TouchableOpacity>
+
 
               </View>
 
+              <TouchableOpacity
+                onPress={() => {
+                  setDeviceTypeModal(null)
+                  navigation.navigate('AddCustomDevice', {
+                    room_id: room_id
+                  })
+                }}
+                style={{
+                  width: "47%",
+                  height: RFValue(50),
+                  backgroundColor: COLORS.primary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: RFValue(10),
+                  alignSelf: 'center',
+                  marginTop: 5
+                }}>
+                <Text style={{
+                  ...FONTS.body3,
+                  color: COLORS.white,
+                  textAlign: "center"
+                }}>
+                  CUSTOM
+                </Text>
+
+
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         </Modal>

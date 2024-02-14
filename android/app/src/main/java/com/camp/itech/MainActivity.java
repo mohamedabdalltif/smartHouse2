@@ -1,4 +1,4 @@
-package com.smarthouse;
+package com.camp.itech;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

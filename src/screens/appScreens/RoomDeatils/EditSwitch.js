@@ -45,7 +45,7 @@ import axios from 'axios';
 
 const EditSwitche = ({ navigation, route }) => {
     const { userData } = useSelector(state => state.UserReducer);
-    const { psdata, type } = route.params;
+    const { psdata, type, client } = route.params;
     const [name, setName] = useState(psdata.name);
     const [topic, setTopic] = useState(psdata.topic);
     const [redtopic, setRedTopic] = useState(psdata.red_topic);
@@ -72,7 +72,7 @@ const EditSwitche = ({ navigation, route }) => {
             ||
             (type === "rgb" && name !== '' && topic !== '' && redtopic !== '' && greentopic !== '' && bluetopic !== '')
             ||
-            ( name !== '' && userData.user_id!=3)
+            (name !== '' && userData.user_id != 3)
         ) {
             const data_send = {
                 switch_id: psdata.switch_id,
@@ -99,11 +99,11 @@ const EditSwitche = ({ navigation, route }) => {
         }
     }
 
-    const deleteSwitch=()=>{
+    const deleteSwitch = () => {
         setDelLoading(true)
-        axios.post("https://camp-coding.tech/smart_home/switchs/delete_switch.php",{
+        axios.post("https://camp-coding.tech/smart_home/switchs/delete_switch.php", {
             switch_id: psdata.switch_id
-        }).then((res)=>{
+        }).then((res) => {
             if (res.data.status == "success") {
                 utils.toastAlert("success", "Switch deleted successfully")
                 navigation.navigate("Home")
@@ -147,7 +147,7 @@ const EditSwitche = ({ navigation, route }) => {
                         flexDirection: "row",
                         alignItems: "center",
                         paddingHorizontal: SIZES.margin,
-                        width:"100%",
+                        width: "100%",
                         justifyContent: "space-between",
                         // backgroundColor:"red"
 
@@ -163,7 +163,7 @@ const EditSwitche = ({ navigation, route }) => {
 
                     {(userData.user_id == 3) && <TouchableOpacity
                         onPress={() => {
-                           deleteSwitch()
+                            deleteSwitch()
                         }}
                         style={{
                             width: RFValue(50),
@@ -177,9 +177,9 @@ const EditSwitche = ({ navigation, route }) => {
                             alignItems: "center",
                             justifyContent: "center"
                         }}>
-                         {delLoading?<ActivityIndicator size={15} color={COLORS.white}/>:
-                        <MaterialCommunityIcons name={"trash-can"} size={RFValue(15)} color={COLORS.white} />
-                    }
+                        {delLoading ? <ActivityIndicator size={15} color={COLORS.white} /> :
+                            <MaterialCommunityIcons name={"trash-can"} size={RFValue(15)} color={COLORS.white} />
+                        }
 
 
                     </TouchableOpacity>
@@ -232,7 +232,7 @@ const EditSwitche = ({ navigation, route }) => {
                     }}
                 />
 
-{(userData.user_id == 3) && <TextInput
+                {(userData.user_id == 3) && <TextInput
                     style={{
                         width: '90%',
                         // height: 50,
@@ -251,212 +251,225 @@ const EditSwitche = ({ navigation, route }) => {
                     }}
                 />
                 }
-                {type == "rgb" && userData.user_id==3&&
+                {type == "rgb" && userData.user_id == 3 &&
+
+
+
                     <>
 
-
-                        <>
-
-                            <TextInput
-                                style={{
-                                    width: '90%',
-                                    // height: 50,
-                                    // backgroundColor: '#ddd',
-                                    borderWidth: 2,
-                                    alignSelf: 'center',
-                                    marginTop: RFValue(20),
-                                    borderRadius: RFValue(15),
-                                    borderColor: '#B6B6B6',
-                                    padding: RFValue(12),
-                                }}
-                                placeholder="Enter your Switch Red Topic"
-                                value={redtopic}
-                                onChangeText={value => {
-                                    setRedTopic(value)
-                                }}
-                            />
-                            <TextInput
-                                style={{
-                                    width: '90%',
-                                    // height: 50,
-                                    // backgroundColor: '#ddd',
-                                    borderWidth: 2,
-                                    alignSelf: 'center',
-                                    marginTop: RFValue(20),
-                                    borderRadius: RFValue(15),
-                                    borderColor: '#B6B6B6',
-                                    padding: RFValue(12),
-                                }}
-                                placeholder="Enter your Switch Green Topic"
-                                value={greentopic}
-                                onChangeText={value => {
-                                    setGreenTopic(value)
-                                }}
-                            />
-
-                            <TextInput
-                                style={{
-                                    width: '90%',
-                                    // height: 50,
-                                    // backgroundColor: '#ddd',
-                                    borderWidth: 2,
-                                    alignSelf: 'center',
-                                    marginTop: RFValue(20),
-                                    borderRadius: RFValue(15),
-                                    borderColor: '#B6B6B6',
-                                    padding: RFValue(12),
-                                }}
-                                placeholder="Enter your Switch Blue Topic"
-                                value={bluetopic}
-                                onChangeText={value => {
-                                    setBlueTopic(value)
-                                }}
-                            />
-                        </>
-
-                        <View
+                        <TextInput
                             style={{
-                                width: "90%",
-                                paddingHorizontal: SIZES.padding,
-                                backgroundColor: COLORS.gray3,
-                                borderRadius: 15,
-                                marginVertical: SIZES.margin,
-                                paddingVertical: SIZES.margin,
-                                alignSelf: "center"
-                            }}>
-                            <MaterialCommunityIcons
-                                name={"lamp"}
-                                style={{
-                                    fontSize: RFValue(25),
-                                    alignSelf: "center",
-                                    color: `rgb(${red},${green},${blue})`
-                                }}
+                                width: '90%',
+                                // height: 50,
+                                // backgroundColor: '#ddd',
+                                borderWidth: 2,
+                                alignSelf: 'center',
+                                marginTop: RFValue(20),
+                                borderRadius: RFValue(15),
+                                borderColor: '#B6B6B6',
+                                padding: RFValue(12),
+                            }}
+                            placeholder="Enter your Switch Red Topic"
+                            value={redtopic}
+                            onChangeText={value => {
+                                setRedTopic(value)
+                            }}
+                        />
+                        <TextInput
+                            style={{
+                                width: '90%',
+                                // height: 50,
+                                // backgroundColor: '#ddd',
+                                borderWidth: 2,
+                                alignSelf: 'center',
+                                marginTop: RFValue(20),
+                                borderRadius: RFValue(15),
+                                borderColor: '#B6B6B6',
+                                padding: RFValue(12),
+                            }}
+                            placeholder="Enter your Switch Green Topic"
+                            value={greentopic}
+                            onChangeText={value => {
+                                setGreenTopic(value)
+                            }}
+                        />
 
-                            />
-                        </View>
-
-                        <View style={{
+                        <TextInput
+                            style={{
+                                width: '90%',
+                                // height: 50,
+                                // backgroundColor: '#ddd',
+                                borderWidth: 2,
+                                alignSelf: 'center',
+                                marginTop: RFValue(20),
+                                borderRadius: RFValue(15),
+                                borderColor: '#B6B6B6',
+                                padding: RFValue(12),
+                            }}
+                            placeholder="Enter your Switch Blue Topic"
+                            value={bluetopic}
+                            onChangeText={value => {
+                                setBlueTopic(value)
+                            }}
+                        />
+                    </>
+                }
+                {type == "rgb" && <>
+                    <View
+                        style={{
                             width: "90%",
                             paddingHorizontal: SIZES.padding,
                             backgroundColor: COLORS.gray3,
                             borderRadius: 15,
                             marginVertical: SIZES.margin,
-                            paddingTop: SIZES.base,
+                            paddingVertical: SIZES.margin,
                             alignSelf: "center"
                         }}>
-                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                                <Text style={{
-                                    ...FONTS.body4,
-                                    marginBottom: SIZES.base,
+                        <MaterialCommunityIcons
+                            name={"lamp"}
+                            style={{
+                                fontSize: RFValue(25),
+                                alignSelf: "center",
+                                color: `rgb(${red},${green},${blue})`
+                            }}
+
+                        />
+                    </View>
+
+                    <View style={{
+                        width: "90%",
+                        paddingHorizontal: SIZES.padding,
+                        backgroundColor: COLORS.gray3,
+                        borderRadius: 15,
+                        marginVertical: SIZES.margin,
+                        paddingTop: SIZES.base,
+                        alignSelf: "center"
+                    }}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                            <Text style={{
+                                ...FONTS.body4,
+                                marginBottom: SIZES.base,
+                                color: `rgb(${red},0,0)`,
+                                fontWeight: "700"
+
+                            }}>{"red"}</Text>
+
+                            <Text
+                                style={{
+                                    ...FONTS.body3,
                                     color: `rgb(${red},0,0)`,
                                     fontWeight: "700"
 
-                                }}>{"red"}</Text>
+                                }}
+                            >{red}</Text>
 
-                                <Text
-                                    style={{
-                                        ...FONTS.body3,
-                                        color: `rgb(${red},0,0)`,
-                                        fontWeight: "700"
-
-                                    }}
-                                >{red}</Text>
-
-
-                            </View>
-                            <Slider
-                                value={red}
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={255}
-
-
-
-                                onValueChange={(value) => setRed(value)}
-
-                            />
 
                         </View>
-                        <View style={{
-                            width: "90%",
-                            paddingHorizontal: SIZES.padding,
-                            backgroundColor: COLORS.gray3,
-                            borderRadius: 15,
-                            marginVertical: SIZES.margin,
-                            paddingTop: SIZES.base,
-                            alignSelf: "center"
-                        }}>
-                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                                <Text style={{
-                                    ...FONTS.body4,
-                                    marginBottom: SIZES.base,
+                        <Slider
+                            value={red}
+                            step={1}
+                            minimumValue={0}
+                            maximumValue={255}
+
+
+
+                            onValueChange={(value) => {
+                                setRed(value)
+                                client?.publish(redtopic, value + "", 2, true)
+                            }
+
+                            }
+
+                        />
+
+                    </View>
+                    <View style={{
+                        width: "90%",
+                        paddingHorizontal: SIZES.padding,
+                        backgroundColor: COLORS.gray3,
+                        borderRadius: 15,
+                        marginVertical: SIZES.margin,
+                        paddingTop: SIZES.base,
+                        alignSelf: "center"
+                    }}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                            <Text style={{
+                                ...FONTS.body4,
+                                marginBottom: SIZES.base,
+                                color: `rgb(0,${green},0)`,
+                                fontWeight: "700"
+
+                            }}>{"green"}</Text>
+
+                            <Text
+                                style={{
+                                    ...FONTS.body3,
                                     color: `rgb(0,${green},0)`,
                                     fontWeight: "700"
 
-                                }}>{"green"}</Text>
+                                }}
+                            >{green}</Text>
 
-                                <Text
-                                    style={{
-                                        ...FONTS.body3,
-                                        color: `rgb(0,${green},0)`,
-                                        fontWeight: "700"
-
-                                    }}
-                                >{green}</Text>
-
-
-                            </View>
-                            <Slider
-                                value={green}
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={255}
-                                onValueChange={(value) => setGreen(value)}
-
-                            />
 
                         </View>
-                        <View style={{
-                            width: "90%",
-                            paddingHorizontal: SIZES.padding,
-                            backgroundColor: COLORS.gray3,
-                            borderRadius: 15,
-                            marginVertical: SIZES.margin,
-                            paddingTop: SIZES.base,
-                            alignSelf: "center"
-                        }}>
-                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                                <Text style={{
-                                    ...FONTS.body4,
-                                    marginBottom: SIZES.base,
+                        <Slider
+                            value={green}
+                            step={1}
+                            minimumValue={0}
+                            maximumValue={255}
+                            onValueChange={(value) => {
+                                setGreen(value)
+                                client?.publish(greentopic, value + "", 2, true)
+                            }}
+
+                        />
+
+                    </View>
+                    <View style={{
+                        width: "90%",
+                        paddingHorizontal: SIZES.padding,
+                        backgroundColor: COLORS.gray3,
+                        borderRadius: 15,
+                        marginVertical: SIZES.margin,
+                        paddingTop: SIZES.base,
+                        alignSelf: "center"
+                    }}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                            <Text style={{
+                                ...FONTS.body4,
+                                marginBottom: SIZES.base,
+                                color: `rgb(0,0,${blue})`,
+                                fontWeight: "700"
+
+                            }}>{"blue"}</Text>
+
+                            <Text
+                                style={{
+                                    ...FONTS.body3,
                                     color: `rgb(0,0,${blue})`,
                                     fontWeight: "700"
 
-                                }}>{"blue"}</Text>
+                                }}
+                            >{blue}</Text>
 
-                                <Text
-                                    style={{
-                                        ...FONTS.body3,
-                                        color: `rgb(0,0,${blue})`,
-                                        fontWeight: "700"
-
-                                    }}
-                                >{blue}</Text>
-
-
-                            </View>
-                            <Slider
-                                value={blue}
-                                step={1}
-                                minimumValue={0}
-                                maximumValue={255}
-                                onValueChange={(value) => setBlue(value)}
-
-                            />
 
                         </View>
-                    </>
-                }
+                        <Slider
+                            value={blue}
+                            step={1}
+                            minimumValue={0}
+                            maximumValue={255}
+                            onValueChange={(value) => {
+                                setBlue(value)
+                                client?.publish(bluetopic, value + "", 2, true)
+                            }}
+
+                        />
+
+                    </View>
+                </>}
+
+
 
 
                 <TouchableOpacity

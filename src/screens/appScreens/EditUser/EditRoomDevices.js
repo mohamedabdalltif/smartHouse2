@@ -8,7 +8,7 @@ import {
     Text,
     BackHandler,
     AccessibilityInfo,
-    StatusBar, Platform, UIManager, LayoutAnimation, Image
+    StatusBar, Platform, UIManager, LayoutAnimation, Image, Alert
 } from "react-native";
 
 import { Dimensions } from 'react-native';
@@ -16,13 +16,14 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 const initialDimensions = Dimensions.get('screen');
 
 import CheckBox from '@react-native-community/checkbox';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ScrollView } from "react-native-gesture-handler";
 import { COLORS, SIZES, icons } from "../../../constants";
 import { RFValue } from "react-native-responsive-fontsize";
 import { TextButton } from "../../../components";
 import axios from "axios";
 import utils from "../../../utils";
+import { setdeviceAdded } from "../../../redux/reducers/AppReducer";
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -32,7 +33,9 @@ if (Platform.OS === 'android') {
 
 
 const EditRoomDevices = ({ route, navigation }) => {
+    const dispatch = useDispatch()
     const { devData } = route.params;
+    const { userData } = useSelector(state => state.UserReducer);
     const [toggleCheckBox, setToggleCheckBox] = useState(false)
 
     const [loading, setLoading] = useState(false)
@@ -134,6 +137,20 @@ const EditRoomDevices = ({ route, navigation }) => {
                 >
                     <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
                 </TouchableOpacity>
+
+                <TouchableOpacity
+
+                    onPress={() => {
+                        // setShowAddDevicesModal(true)
+                        // setshow_modal(true);
+                        dispatch(setdeviceAdded(false))
+                        navigation.navigate("AddDevicesType", {
+                            room_id: devData.room_id
+                        })
+                    }}>
+                    <Image source={icons.add} style={{ width: 55, height: 55 }} resizeMode='contain' />
+                </TouchableOpacity>
+
             </View>
             <ScrollView>
 
@@ -163,12 +180,12 @@ const EditRoomDevices = ({ route, navigation }) => {
 
 
                             <TouchableOpacity
-                             onPress={()=>{
-                                navigation.navigate("EditSwitch", {
-                                    psdata: sw_item,
-                                    type: ""
-                                  })
-                            }}
+                                onPress={() => {
+                                    navigation.navigate("EditSwitch", {
+                                        psdata: sw_item,
+                                        type: ""
+                                    })
+                                }}
                                 style={{
                                     flexDirection: "row",
                                     // height: 100,
@@ -215,12 +232,12 @@ const EditRoomDevices = ({ route, navigation }) => {
 
 
                             <TouchableOpacity
-                             onPress={()=>{
-                                navigation.navigate("EditSensor", {
-                                    psdata: sw_item,
-                                    type: ""
-                                  })
-                            }}
+                                onPress={() => {
+                                    navigation.navigate("EditSensor", {
+                                        psdata: sw_item,
+                                        type: ""
+                                    })
+                                }}
                                 style={{
                                     flexDirection: "row",
                                     // height: 100,
@@ -266,12 +283,12 @@ const EditRoomDevices = ({ route, navigation }) => {
 
 
                             <TouchableOpacity
-                            onPress={()=>{
-                                navigation.navigate("EditDevice", {
-                                    psdata: sw_item,
-                                    type: ""
-                                  })
-                            }}
+                                onPress={() => {
+                                    navigation.navigate("EditDevice", {
+                                        psdata: sw_item,
+                                        type: ""
+                                    })
+                                }}
                                 style={{
                                     flexDirection: "row",
                                     // height: 100,

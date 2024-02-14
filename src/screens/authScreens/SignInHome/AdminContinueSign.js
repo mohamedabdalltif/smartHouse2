@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View,
-    Text,
-    StyleSheet,
-    Platform,
-    TouchableOpacity,
-    FlatList,
-    ImageBackground,
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+  FlatList,
+  ImageBackground,
 
-    Modal,
-    ActivityIndicator,
-    StatusBar,
+  Modal,
+  ActivityIndicator,
+  StatusBar,
 
-    SafeAreaView,
-    Image,
+  SafeAreaView,
+  Image,
 
 } from 'react-native';
 
@@ -51,238 +51,239 @@ import Auth from '../../../Services';
 import axios from 'axios';
 
 const AdminContinueSign = ({ navigation, route }) => {
-    const dispatch = useDispatch();
-   const {psData}=route.params;
-    const [connectionUsername, setConnectionUsername] = useState('')
-    const [connectionPassword, setConnectionPassword] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [isFlash, setIsFlash] = React.useState(false);
+  const dispatch = useDispatch();
+  const { psData } = route.params;
+  const [connectionUsername, setConnectionUsername] = useState('')
+  const [connectionPassword, setConnectionPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [isFlash, setIsFlash] = React.useState(false);
   const [show_modal, setshow_modal] = React.useState(false)
 
 
-    async function storedata(data) {
-        await Auth.setAccount(data);
-      }
-      function onSuccess(e) {
-        console.log(e.data)
-        // Alert.alert('Home', 'device added successfly')
-        let res = e?.data?.split(",")
-        setConnectionUsername(res[0])
-        setConnectionPassword(res[1])
-        setshow_modal(false)
-      };
+  async function storedata(data) {
+    await Auth.setAccount(data);
+  }
+  function onSuccess(e) {
+    console.log(e.data)
+    // Alert.alert('Home', 'device added successfly')
+    let res = e?.data?.split(",")
+    setConnectionUsername(res[0])
+    setConnectionPassword(res[1])
+    setshow_modal(false)
+  };
 
-    const signUp = () => {
-        setLoading(true)
-         if (connectionPassword===''||connectionUsername==='') {
-           utils.toastAlert("error", "Please check values")
-           setLoading(false)
-           return;
-         }
+  const signUp = () => {
+    setLoading(true)
+    if (connectionPassword === '' || connectionUsername === '') {
+      utils.toastAlert("error", "Please check values")
+      setLoading(false)
+      return;
+    }
 
-         let currentTime = +new Date();
-        let clientID = currentTime + uuid.v1();
-        clientID = clientID.slice(0, 23)
-        MQTT.createClient({
-          // uri: 'mqtt://185.194.217.124:1883',
-          clientId: clientID,
-          user: connectionUsername,
-          pass: connectionPassword,
-          // user:'MohamedSaad',
-          //  pass: 'MS_127RTIF_#$%_e',
-          protocol: "mqtt",
-          tls: false,
-          host: "185.194.217.124",
-          port: 1883,
-         
-          auth: true,
-          automaticReconnect: true,
-    
-    
-        }).then(function (client) {
-          
-    
-          client.on('error', function (msg) {
-            utils.toastAlert("error","error happen when trying to connect")
-           
-          });
-    
-         
-    
-          client.on('connect', function () {
-            const data=psData
-            console.log(data)
-            data['connection_user_name']=connectionUsername
-            data['connection_pass']=connectionPassword
-            
-            dispatch(setUser(data))
-            storedata((data))
-            client.disconnect()
-            utils.toastAlert("success", "Login Done Successfully")
-            setLoading(false)
+    let currentTime = +new Date();
+    let clientID = currentTime + uuid.v1();
+    clientID = clientID.slice(0, 23)
+    MQTT.createClient({
+      // uri: 'mqtt://185.194.217.124:1883',
+      clientId: clientID,
+      user: connectionUsername,
+      pass: connectionPassword,
+      // user:'MohamedSaad',
+      //  pass: 'MS_127RTIF_#$%_e',
+      protocol: "mqtt",
+      tls: false,
+      host: "185.194.217.124",
+      port: 1883,
 
-    
-          });
-    
-    
-          client.connect();
-    
-    
-    
-        }).catch(function (err) {
-          utils.toastAlert("error","error happen when trying to connect")
-        });
-     
-             
-            
-     
-       }
+      auth: true,
+      automaticReconnect: true,
 
 
-       function Connection() {
-        let currentTime = +new Date();
-        let clientID = currentTime + uuid.v1();
-        clientID = clientID.slice(0, 23)
-        MQTT.createClient({
-          // uri: 'mqtt://185.194.217.124:1883',
-          clientId: clientID,
-          user: userData.connection_user_name,
-          pass: userData.connection_pass,
-          // user:'MohamedSaad',
-          //  pass: 'MS_127RTIF_#$%_e',
-          protocol: "mqtt",
-          tls: false,
-          host: "185.194.217.124",
-          port: 1883,
-          // will:true,
-          // willQos:0,
-          // willRetainFlag:false,
-          // willtopic:"I4TCShSFR40XTUWVXYZ4",
-          auth: true,
-          automaticReconnect: true,
-    
-    
-        }).then(function (client) {
-          // console.log(client)
-          client.on('closed', function () {
-            console.log('mqtt.event.closed');
-            // dispatch(modifySensorConn(false))
-            setConnection(false)
-          });
-    
-          client.on('error', function (msg) {
-            console.log('mqtt.event.error', msg);
-            // dispatch(modifySensorConn(false))
-    
-            setConnection(false)
-          });
-    
-          // client.on('message', function (msg) {
-          //   console.log('mqtt.event.message Home', msg);
-    
-          //   console.log(msg.data)
-          // });
-    
-          client.on('connect', function () {
-            console.log('connected');
-            // dispatch(setClient(client))
-            // dispatch(modifySensorConn(true))
-            setClient(client)
-            setConnection(true)
-            // client.subscribe('I4TCShSFR40XTUWVXYZ4', 0);
-            // // client.unsubscribe("#")
-            // client.publish('I4TCShSFR40XTUWVXYZ4/SWITCH/I4TCShPSw1OXTUWVXYZ5J/SWITCH2', "1", 2, true);
-    
-          });
-    
-    
-          client.connect();
-    
-    
-    
-        }).catch(function (err) {
-          console.log(err);
-        });
-      }
+
+    }).then(function (client) {
+
+
+      client.on('error', function (msg) {
+        utils.toastAlert("error", "error happen when trying to connect")
+
+      });
+
+
+
+      client.on('connect', function () {
+        const data = psData
+        console.log(data)
+        data['connection_user_name'] = connectionUsername
+        data['connection_pass'] = connectionPassword
+
+        dispatch(setUser(data))
+        storedata((data))
+        client.disconnect()
+        utils.toastAlert("success", "Login Done Successfully")
+        setLoading(false)
+
+
+      });
+
+
+      client.connect();
+
+
+
+    }).catch(function (err) {
+      utils.toastAlert("error", "error happen when trying to connect")
+    });
 
 
 
 
-    return (
-        <SafeAreaView
+  }
+
+
+  function Connection() {
+    let currentTime = +new Date();
+    let clientID = currentTime + uuid.v1();
+    clientID = clientID.slice(0, 23)
+    MQTT.createClient({
+      // uri: 'mqtt://185.194.217.124:1883',
+      clientId: clientID,
+      user: userData.connection_user_name,
+      pass: userData.connection_pass,
+      // user:'MohamedSaad',
+      //  pass: 'MS_127RTIF_#$%_e',
+      protocol: "mqtt",
+      tls: false,
+      host: "185.194.217.124",
+      port: 1883,
+      // will:true,
+      // willQos:0,
+      // willRetainFlag:false,
+      // willtopic:"I4TCShSFR40XTUWVXYZ4",
+      auth: true,
+      automaticReconnect: true,
+
+
+    }).then(function (client) {
+      // console.log(client)
+      client.on('closed', function () {
+        console.log('mqtt.event.closed');
+        // dispatch(modifySensorConn(false))
+        setConnection(false)
+      });
+
+      client.on('error', function (msg) {
+        console.log('mqtt.event.error', msg);
+        // dispatch(modifySensorConn(false))
+
+        setConnection(false)
+      });
+
+      // client.on('message', function (msg) {
+      //   console.log('mqtt.event.message Home', msg);
+
+      //   console.log(msg.data)
+      // });
+
+      client.on('connect', function () {
+        console.log('connected');
+        // dispatch(setClient(client))
+        // dispatch(modifySensorConn(true))
+        setClient(client)
+        setConnection(true)
+        // client.subscribe('I4TCShSFR40XTUWVXYZ4', 0);
+        // // client.unsubscribe("#")
+        // client.publish('I4TCShSFR40XTUWVXYZ4/SWITCH/I4TCShPSw1OXTUWVXYZ5J/SWITCH2', "1", 2, true);
+
+      });
+
+
+      client.connect();
+
+
+
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
+
+
+
+
+  return (
+    <SafeAreaView
+      style={{
+        backgroundColor: COLORS.white,
+        flex: 1,
+      }}>
+      <StatusBar translucent={true} backgroundColor={'transparent'} barStyle={"dark-content"} />
+      <ImageBackground
+        source={{
+          uri: 'https://bondhome.io/wp-content/uploads/2020/08/Post_30_Blog_03_BOND.png',
+        }}
+        style={{
+          flex: 1,
+
+
+        }}
+        resizeMode='cover'
+
+      >
+
+        <View
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: COLORS.gray3,
+            opacity: .9,
+            paddingHorizontal: SIZES.margin
+          }}
+        >
+          <View
             style={{
-                backgroundColor: COLORS.white,
-                flex: 1,
-            }}>
-            <StatusBar translucent={true} backgroundColor={'transparent'} barStyle={"dark-content"} />
-            <ImageBackground
-                source={{
-                    uri: 'https://bondhome.io/wp-content/uploads/2020/08/Post_30_Blog_03_BOND.png',
-                }}
-                style={{
-                    flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+              // paddingHorizontal: SIZES.margin,
+              // width:"100%",
+              justifyContent: "space-between"
 
-
-                }}
-                resizeMode='cover'
-
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
             >
-
-                <View
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: COLORS.gray3,
-                        opacity: .9,
-                        paddingHorizontal: SIZES.margin
-                    }}
-                >
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            // paddingHorizontal: SIZES.margin,
-                            // width:"100%",
-                            justifyContent: "space-between"
-
-                        }}
-                    >
-                        <TouchableOpacity
-                            onPress={() => {
-                                navigation.goBack();
-                            }}
-                        >
-                            <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
-                        </TouchableOpacity>
-                        <View />
+              <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
+            </TouchableOpacity>
+            <View />
 
 
 
-                    </View>
+          </View>
 
 
 
-                    <ScrollView contentContainerStyle={{ paddingBottom: SIZES.padding * 4, marginTop: SIZES.margin }} showsVerticalScrollIndicator={false}>
-                        <View style={{
-                            alignItems: "center",
-                            marginVertical: SIZES.margin * 2,
-                            // backgroundColor:"red"
-                        }}>
-                            <Text
-                                style={{
-                                    ...FONTS.body1,
-                                    color: COLORS.black,
-                                    fontWeight: "500"
+          <ScrollView contentContainerStyle={{ paddingBottom: SIZES.padding * 4, marginTop: SIZES.margin }} showsVerticalScrollIndicator={false}>
+            <View style={{
+              alignItems: "center",
+              marginVertical: SIZES.margin * 2,
+              // backgroundColor:"red"
+            }}>
+              <Text
+                style={{
+                  ...FONTS.body1,
+                  color: COLORS.black,
+                  fontWeight: "500"
 
 
-                                }}
-                            >
-                                Continue Login
+                }}
+              >
+                Continue Login
 
-                            </Text>
+              </Text>
 
-                        </View>
-                        {/* <View style={{ alignItems: "center", marginBottom: SIZES.margin * 2 }}>
+            </View>
+            {/* <View style={{ alignItems: "center", marginBottom: SIZES.margin * 2 }}>
                             <QRCode
                                 value={`${Email || ''},${Password || ''}`}
                                 size={180}
@@ -290,73 +291,73 @@ const AdminContinueSign = ({ navigation, route }) => {
                         </View> */}
 
 
-                       
-                        <CustomTextInput TextContainerStyle={{
-                            alignSelf: "center",
-                            width: "100%",
-                            height: RFValue(55),
-                            borderRadius: RFValue(50),
-                            // borderWidth: 0.5,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            // paddingLeft: SIZES.padding,
-                            backgroundColor: COLORS.white,
-                            marginBottom: SIZES.margin
 
-                        }}
+            <CustomTextInput TextContainerStyle={{
+              alignSelf: "center",
+              width: "100%",
+              height: RFValue(55),
+              borderRadius: RFValue(50),
+              // borderWidth: 0.5,
+              flexDirection: "row",
+              alignItems: "center",
+              // paddingLeft: SIZES.padding,
+              backgroundColor: COLORS.white,
+              marginBottom: SIZES.margin
 
-                            value={connectionUsername} placeholder={"Connection Username"} onChangeText={(txt) => {
-                                setConnectionUsername(txt)
+            }}
 
-                            }}
+              value={connectionUsername} placeholder={"Connection Username"} onChangeText={(txt) => {
+                setConnectionUsername(txt)
 
-                        />
+              }}
+
+            />
 
 
-                        <CustomTextInput TextContainerStyle={{
-                            alignSelf: "center",
-                            width: "100%",
-                            height: RFValue(55),
-                            borderRadius: RFValue(50),
-                            // borderWidth: 0.5,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            // paddingLeft: SIZES.padding,
-                            backgroundColor: COLORS.white,
+            <CustomTextInput TextContainerStyle={{
+              alignSelf: "center",
+              width: "100%",
+              height: RFValue(55),
+              borderRadius: RFValue(50),
+              // borderWidth: 0.5,
+              flexDirection: "row",
+              alignItems: "center",
+              // paddingLeft: SIZES.padding,
+              backgroundColor: COLORS.white,
 
-                        }}
+            }}
 
-                            value={connectionPassword} placeholder={"Connection Password"} onChangeText={(txt) => {
-                                setConnectionPassword(txt)
+              value={connectionPassword} placeholder={"Connection Password"} onChangeText={(txt) => {
+                setConnectionPassword(txt)
 
-                            }}
+              }}
 
-                        />
+            />
 
-<View style={{
+            <View style={{
               flexDirection: "row", alignItems: "center", marginTop: SIZES.margin * 3,
               marginBottom: SIZES.margin,
               justifyContent: "space-between"
             }}>
 
-                        <TextButton
-                            onPress={() => 
-                                signUp()
-                            }
-                            buttonContainerStyle={{
-                                backgroundColor: COLORS.black,
-                                width: "75%",
-                                alignSelf: "center",
-                                // marginTop: SIZES.margin * 3,
-                                height: RFValue(55),
-                                borderRadius: RFValue(50),
-                                // marginBottom: SIZES.margin
-                            }}
-                            loading={loading}
-                            label={"Continue"}
+              <TextButton
+                onPress={() =>
+                  signUp()
+                }
+                buttonContainerStyle={{
+                  backgroundColor: COLORS.black,
+                  width: "75%",
+                  alignSelf: "center",
+                  // marginTop: SIZES.margin * 3,
+                  height: RFValue(55),
+                  borderRadius: RFValue(50),
+                  // marginBottom: SIZES.margin
+                }}
+                loading={loading}
+                label={"Continue"}
 
-                        />
-                         <TouchableOpacity
+              />
+              <TouchableOpacity
                 onPress={() => {
                   setshow_modal(true)
                 }}
@@ -372,16 +373,16 @@ const AdminContinueSign = ({ navigation, route }) => {
             </View>
 
 
-                    </ScrollView>
+          </ScrollView>
 
-                </View>
+        </View>
 
 
 
-            </ImageBackground>
-         
+      </ImageBackground>
 
-            <Modal
+
+      <Modal
         visible={show_modal}
         onRequestClose={() => {
           setshow_modal(false);
@@ -464,8 +465,8 @@ const AdminContinueSign = ({ navigation, route }) => {
 
 
       </Modal>
-        </SafeAreaView>
-    );
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({

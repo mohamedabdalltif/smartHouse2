@@ -42,8 +42,8 @@ const SubUser = ({ route, navigation }) => {
 
   const [data, setdata] = React.useState(
     []
-//  JSON.parse(JSON.stringify(appData))
- 
+    //  JSON.parse(JSON.stringify(appData))
+
   )
   // useEffect(()=>{
   //   // console.log(JSON.stringify(appData))
@@ -63,15 +63,15 @@ const SubUser = ({ route, navigation }) => {
   //   console.log(JSON.stringify(editData))
   //   setdata(editData)
   // },[])
-useEffect(()=>{
-  
-  const unsubscribe = navigation.addListener('focus', () => {
-    getData()
-   
-  });
+  useEffect(() => {
 
-  return unsubscribe;
-},[navigation])
+    const unsubscribe = navigation.addListener('focus', () => {
+      getData()
+
+    });
+
+    return unsubscribe;
+  }, [navigation])
 
   function getData() {
     // console.log(userData)
@@ -82,8 +82,8 @@ useEffect(()=>{
       console.log(res.data)
       if (res.data.status == "success") {
         setLoading(false)
-        
-       
+
+
         setdata(res.data.message)
         // setLoading(false)
         // dispatch(setAppData(arr))
@@ -98,23 +98,23 @@ useEffect(()=>{
 
 
   }
-  function changeToggle(index,inner_index,type) {
+  function changeToggle(index, inner_index, type) {
     console.log(index + '********' + inner_index)
     let old_data = [...data]
-if(type=="sw"){
-    old_data[index].switches[inner_index].check = !old_data[index].switches[inner_index].check
-    setdata(old_data)
-    // console.log(old_data[index].switches[inner_index].check)
-}else if(type=="dev"){
-  old_data[index].devices[inner_index].check = !old_data[index].devices[inner_index].check
-  setdata(old_data)
-    // console.log(old_data[index].devices[inner_index].check)
-}else if(type=="sen"){
-  old_data[index].sensors[inner_index].check = !old_data[index].sensors[inner_index].check
-  setdata(old_data)
-    // console.log(old_data[index].devices[inner_index].check)
-}
-    
+    if (type == "sw") {
+      old_data[index].switches[inner_index].check = !old_data[index].switches[inner_index].check
+      setdata(old_data)
+      // console.log(old_data[index].switches[inner_index].check)
+    } else if (type == "dev") {
+      old_data[index].devices[inner_index].check = !old_data[index].devices[inner_index].check
+      setdata(old_data)
+      // console.log(old_data[index].devices[inner_index].check)
+    } else if (type == "sen") {
+      old_data[index].sensors[inner_index].check = !old_data[index].sensors[inner_index].check
+      setdata(old_data)
+      // console.log(old_data[index].devices[inner_index].check)
+    }
+
   }
 
   function changeshow(index) {
@@ -138,76 +138,76 @@ if(type=="sw"){
   return (
     <View style={{
       flex: 1,
-      backgroundColor:COLORS.white
+      backgroundColor: COLORS.white
     }}>
       {/* <StatusBar backgroundColor='#tran' /> */}
-      
 
 
-      
-{/* <View> */}
-<View
-                    style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        paddingHorizontal: SIZES.margin,
-                        // width:"100%",
-                        justifyContent: "space-between"
 
-                    }}
-                >
-                    <TouchableOpacity
-                        onPress={() => {
-                            navigation.goBack();
-                        }}
-                    >
-                        <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
-                    </TouchableOpacity>
-                    </View>
-                    {!loading?
-  <ScrollView>
-      {data?.map((item, index) => (
-        <>
-        <TouchableOpacity
-        onPress={()=>{
-          navigation.navigate("SubDevices",{
-            devData:item
-          })
-        }}
+
+      {/* <View> */}
+      <View
         style={{
-          backgroundColor:COLORS.gray3,marginBottom:SIZES.base,
-          width:"90%",
-          alignItems:"center",
-          alignSelf:"center",
-          paddingVertical:SIZES.padding,
-          marginTop:SIZES.margin,
-          borderRadius:SIZES.radius
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: SIZES.margin,
+          // width:"100%",
+          justifyContent: "space-between"
+
         }}
       >
-        <Text
-          style={{
-            fontSize: 22,
-            color:COLORS.primary,
-            // marginBottom:SIZES.margin
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
           }}
         >
-         {data[index].name}
-        </Text>
-     
-     
-     </TouchableOpacity>
-         
-        
+          <Image source={icons.Backview} style={{ width: 55, height: 55 }} resizeMode='contain' />
+        </TouchableOpacity>
+      </View>
+      {!loading ?
+        <ScrollView>
+          {data?.map((item, index) => (
+            <>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("SubDevices", {
+                    devData: item
+                  })
+                }}
+                style={{
+                  backgroundColor: COLORS.gray3, marginBottom: SIZES.base,
+                  width: "90%",
+                  alignItems: "center",
+                  alignSelf: "center",
+                  paddingVertical: SIZES.padding,
+                  marginTop: SIZES.margin,
+                  borderRadius: SIZES.radius
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 22,
+                    color: COLORS.primary,
+                    // marginBottom:SIZES.margin
+                  }}
+                >
+                  {data[index].name}
+                </Text>
+
+
+              </TouchableOpacity>
 
 
 
-        </>
 
 
-      ))}
-      </ScrollView>
-      :<ActivityIndicator size={50} style={{marginTop:SIZES.margin*2}}/>}
-{/* </View> */}
+            </>
+
+
+          ))}
+        </ScrollView>
+        : <ActivityIndicator size={50} style={{ marginTop: SIZES.margin * 2 }} />}
+      {/* </View> */}
     </View>
   )
 }
