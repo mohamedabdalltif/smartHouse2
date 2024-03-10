@@ -11,16 +11,17 @@ import utils from '../../../utils'
 import { useDispatch } from 'react-redux'
 import { setdeviceAdded } from '../../../redux/reducers/AppReducer'
 
-const CustomDevicesScreen = () => {
+const CustomDevicesScreen = ({ navigation }) => {
     const dispatch = useDispatch()
     const { data }: any = useRoute().params
-    const { goBack, navigate } = useNavigation<any>()
+    // const { goBack, navigate } = useNavigation<any>()
     const [visable, setVisable] = React.useState(false)
+    const [edit, setEdit] = React.useState(-1)
     const [loading, setLoading] = React.useState(false);
     const [Data, setData] = React.useState([])
-    useEffect(()=>{
-      console.log(JSON.stringify(Data))
-    },[])
+    useEffect(() => {
+        console.log(JSON.stringify(Data))
+    }, [])
     // console.log(data,Data)
 
 
@@ -42,7 +43,7 @@ const CustomDevicesScreen = () => {
                 utils.toastAlert("success", "Device added successfully")
                 dispatch(setdeviceAdded(true))
 
-                goBack()
+                navigation.pop(4)
                 setLoading(false)
             } else {
                 utils.toastAlert("error", "Error happen please try again later")
@@ -53,9 +54,9 @@ const CustomDevicesScreen = () => {
     }
     return (
         <SafeAreaView style={styles.Container} edges={['top']}>
-            <AddCustomButtonScreen data={Data} setData={setData} visable={visable} setVisable={setVisable} />
+            <AddCustomButtonScreen data={Data} setData={setData} visable={visable} setVisable={setVisable} edit={edit} setEdit={setEdit} />
             <View style={styles.HeaderContainer}>
-                <TouchableOpacity style={styles.BackButton} onPress={() => { goBack() }}>
+                <TouchableOpacity style={styles.BackButton} onPress={() => { navigation.goBack() }}>
                     <Image source={icons.Backview} style={styles.BackImage} resizeMode='contain' />
                 </TouchableOpacity>
                 <Text style={styles.Title}>{data?.name}</Text>
@@ -66,10 +67,24 @@ const CustomDevicesScreen = () => {
 
 
             <ScrollView style={{ padding: 25 }} showsVerticalScrollIndicator={false}>
+                <Text
+                    style={{
+                        ...FONTS.body4,
+                        color: COLORS.primary,
+                        textDecorationLine: "underline",
+                        textAlign: "center",
+                        marginBottom: SIZES.margin * 2
+                    }}
+                >
+                    Long press on device to edit button
+                </Text>
                 <View style={styles.Row}>
-                    {Data?.map((item: any) => {
+                    {Data?.map((item: any, index: any) => {
                         return (
-                            <TouchableOpacity activeOpacity={.8} style={styles.buttonContainer}>
+                            <TouchableOpacity onLongPress={() => {
+                                setEdit(index)
+                                setVisable(true)
+                            }} activeOpacity={.8} style={styles.buttonContainer}>
                                 <Text style={styles.buttonText}>{item?.name}</Text>
                             </TouchableOpacity>
                         )

@@ -10,15 +10,21 @@ const AddCustomButtonScreen = ({
     data,
     setData,
     visable,
-    setVisable
+    setVisable,
+    edit,
+    setEdit
 }: {
     data: any[]
     setData: any
     visable: boolean
     setVisable: any
+    edit: any
+    setEdit: any
+
+
 }) => {
-    const [name, setName] = React.useState('')
-    const [topic, setTopic] = React.useState('')
+    const [name, setName] = React.useState("")
+    const [topic, setTopic] = React.useState("")
     const AddButton = () => {
         const newData = [...data];
         if (name?.trim()?.length == 0 || topic?.trim()?.length == 0) {
@@ -35,9 +41,27 @@ const AddCustomButtonScreen = ({
         }
 
     }
+    const EditButton = () => {
+        const newData = [...data];
+        newData[edit].name = name
+        newData[edit].topic = topic
+
+        setData(newData)
+        setVisable(false)
+        setEdit(-1)
+
+
+
+    }
     useEffect(() => {
-        setName('')
-        setTopic('')
+        if (edit == -1) {
+            setName("")
+            setTopic('')
+        }
+        else {
+            setName(data[edit]?.name)
+            setTopic(data[edit]?.topic)
+        }
     }, [visable])
     return (
         <Modal backdropColor='#fff' isVisible={visable} style={styles.Modal}>
@@ -53,7 +77,7 @@ const AddCustomButtonScreen = ({
                 </ImageBackground>
 
                 <ScrollView style={{ padding: 25 }} showsVerticalScrollIndicator={false}>
-                    <Text style={styles.AddText}>Add Button</Text>
+                    <Text style={styles.AddText}>{edit != -1 ? "Edit Button" : "Add Button"}</Text>
                     <TextInput
                         style={styles.Input}
                         placeholder="Enter your Button name"
@@ -67,8 +91,8 @@ const AddCustomButtonScreen = ({
                         onChangeText={val => { setTopic(val) }}
                     />
 
-                    <TouchableOpacity onPress={() => { AddButton() }} style={styles.AddButton}>
-                        <Text style={styles.ButtonTitle}>Add Button</Text>
+                    <TouchableOpacity onPress={() => { edit != -1 ? EditButton() : AddButton() }} style={styles.AddButton}>
+                        <Text style={styles.ButtonTitle}>{edit != -1 ? "Edit Button" : "Add Button"}</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </SafeAreaView >

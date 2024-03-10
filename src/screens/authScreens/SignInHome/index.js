@@ -71,9 +71,9 @@ const SignInHome = ({ navigation, route }) => {
     axios.post("https://camp-coding.tech/smart_home/auth/user_login.php", {
       email: Email.trim(),
       password: Password,
-      // token:token
+      token: token
     }).then((res) => {
-      console.log(res.data)
+      // console.log(res.data)
       if (res.data.status === "success") {
 
         if (res.data.massage.user_id == 3) {

@@ -760,12 +760,11 @@ const RoomDeatils = ({ navigation, route }) => {
       <StatusBar translucent={true} backgroundColor={'transparent'} barStyle={"dark-content"} />
       <ImageBackground
         source={{
-          uri: 'https://bondhome.io/wp-content/uploads/2020/08/Post_30_Blog_03_BOND.png',
+          uri: psdata?.image.replaceAll("\"", "").trim()
+          // 'https://bondhome.io/wp-content/uploads/2020/08/Post_30_Blog_03_BOND.png',
         }}
         style={{
           flex: 1,
-
-
         }}
         resizeMode='cover'
 
